@@ -1,0 +1,11 @@
+# Build outputs
+bin/
+obj/
+
+# IDE files
+.vs/
+.vscode/
+*.user
+
+# Development configuration
+appsettings.Development.json

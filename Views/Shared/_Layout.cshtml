@@ -1,0 +1,140 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f85606" />
+    <title>@ViewData["Title"] - ShopSphere</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ShopSphere.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="topbar">
+        <div class="container topbar-inner">
+            <span>Thoughtful finds. Delivered across Nepal.</span>
+            <div class="topbar-links">
+                <a asp-controller="Home" asp-action="Privacy">Help &amp; Support</a>
+                <a asp-controller="Home" asp-action="Privacy">Track your order</a>
+            </div>
+        </div>
+    </div>
+
+    <header class="store-header">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg store-navbar" aria-label="Main navigation">
+                <a class="navbar-brand brand-lockup" asp-controller="Home" asp-action="Index" aria-label="ShopSphere home">
+                    <span class="brand-mark" aria-hidden="true">
+                        <svg viewBox="0 0 32 32" focusable="false">
+                            <path d="M5 8h3l2.2 12.1a2 2 0 0 0 2 1.6h10.9a2 2 0 0 0 1.9-1.4L28 12H10" />
+                            <circle cx="13.5" cy="26" r="1.7" />
+                            <circle cx="23" cy="26" r="1.7" />
+                            <path d="m15 6 3 3 3-3" />
+                        </svg>
+                    </span>
+                    <span class="brand-name">Shop<span>Sphere</span></span>
+                </a>
+
+                <button class="navbar-toggler store-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#storeNavigation" aria-controls="storeNavigation" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="storeNavigation">
+                    <form class="store-search mx-lg-auto" role="search" action="#" method="get">
+                        <label class="visually-hidden" for="storeSearch">Search ShopSphere</label>
+                        <input id="storeSearch" class="form-control" type="search" placeholder="Search for products, brands and more..." />
+                        <button type="submit" aria-label="Search">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8" /><path d="m16 16 5 5" /></svg>
+                        </button>
+                    </form>
+
+                    <div class="header-actions">
+                        <a class="header-action" asp-controller="Home" asp-action="Privacy">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5" /><path d="M5 20a7 7 0 0 1 14 0" /></svg>
+                            <span>Sign in</span>
+                        </a>
+                        <a class="header-action cart-action" asp-controller="Home" asp-action="Privacy" aria-label="Shopping bag">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16l-1.2 12H5.2L4 8Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
+                            <span>Bag</span>
+                            <span class="cart-count">0</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <nav class="category-nav" aria-label="Shop by category">
+            <div class="container category-nav-inner">
+                <a class="category-nav-link active" asp-controller="Home" asp-action="Index">Discover</a>
+                <a class="category-nav-link" asp-controller="Home" asp-action="Index" asp-fragment="flash-deals">Flash deals</a>
+                <a class="category-nav-link" asp-controller="Home" asp-action="Index" asp-fragment="categories">Fashion</a>
+                <a class="category-nav-link" asp-controller="Home" asp-action="Index" asp-fragment="categories">Electronics</a>
+                <a class="category-nav-link" asp-controller="Home" asp-action="Index" asp-fragment="categories">Home &amp; living</a>
+                <a class="category-nav-link" asp-controller="Home" asp-action="Index" asp-fragment="categories">Beauty</a>
+                <a class="category-nav-link" asp-controller="Home" asp-action="Index" asp-fragment="featured">More to explore <span aria-hidden="true">⌄</span></a>
+            </div>
+        </nav>
+    </header>
+
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <footer class="store-footer">
+        <div class="container">
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <a class="brand-lockup" asp-controller="Home" asp-action="Index" aria-label="ShopSphere home">
+                        <span class="brand-mark" aria-hidden="true">
+                            <svg viewBox="0 0 32 32" focusable="false">
+                                <path d="M5 8h3l2.2 12.1a2 2 0 0 0 2 1.6h10.9a2 2 0 0 0 1.9-1.4L28 12H10" />
+                                <circle cx="13.5" cy="26" r="1.7" />
+                                <circle cx="23" cy="26" r="1.7" />
+                                <path d="m15 6 3 3 3-3" />
+                            </svg>
+                        </span>
+                        <span class="brand-name">Shop<span>Sphere</span></span>
+                    </a>
+                    <p>Your everyday marketplace for little discoveries and big ideas.</p>
+                    <div class="footer-socials" aria-label="Follow ShopSphere">
+                        <a href="#" aria-label="Instagram">ig</a>
+                        <a href="#" aria-label="Facebook">f</a>
+                        <a href="#" aria-label="TikTok">♪</a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h2>Shop with us</h2>
+                    <a asp-controller="Home" asp-action="Index" asp-fragment="categories">All categories</a>
+                    <a asp-controller="Home" asp-action="Index" asp-fragment="flash-deals">Flash deals</a>
+                    <a asp-controller="Home" asp-action="Index" asp-fragment="featured">Featured finds</a>
+                </div>
+                <div class="footer-column">
+                    <h2>Customer care</h2>
+                    <a asp-controller="Home" asp-action="Privacy">Help center</a>
+                    <a asp-controller="Home" asp-action="Privacy">Delivery information</a>
+                    <a asp-controller="Home" asp-action="Privacy">Returns &amp; refunds</a>
+                </div>
+                <div class="footer-column footer-newsletter">
+                    <h2>Get the good stuff</h2>
+                    <p>Fresh finds and offers, straight to your inbox.</p>
+                    <form action="#" method="get">
+                        <label class="visually-hidden" for="newsletterEmail">Email address</label>
+                        <input id="newsletterEmail" type="email" placeholder="Your email address" />
+                        <button type="submit" aria-label="Subscribe">→</button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>&copy; @DateTime.Now.Year ShopSphere. Made for everyday discovery.</span>
+                <span>Prices shown in Nepalese rupees (NPR)</span>
+                <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

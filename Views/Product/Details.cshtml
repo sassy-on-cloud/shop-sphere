@@ -1,0 +1,47 @@
+﻿@model ShopSphere.Models.ProductDetailsViewModel
+@{
+    ViewData["Title"] = Model.Product.ProductName;
+}
+
+<section class="container product-details-page">
+    <a class="product-back-link" asp-controller="Home" asp-action="Index">← Back to discovering</a>
+    <div class="product-details-card">
+        <div class="product-details-image">
+            <img src="@Model.Product.ImageUrl" alt="@Model.Product.ProductName" />
+            @if (Model.Product.DiscountPercentage > 0)
+            {
+                <span class="product-badge">@Model.Product.DiscountPercentage.ToString("0.#")% OFF</span>
+            }
+        </div>
+        <div class="product-details-copy">
+            <a class="product-details-category" asp-controller="Home" asp-action="Index" asp-fragment="categories">
+                @Model.Product.Category.CategoryName
+            </a>
+            <h1>@Model.Product.ProductName</h1>
+            <div class="product-details-price">
+                <strong>NPR @Model.CurrentPrice.ToString("N0")</strong>
+                @if (Model.Product.DiscountPercentage > 0)
+                {
+                    <del>NPR @Model.Product.Price.ToString("N0")</del>
+                    <span>@Model.Product.DiscountPercentage.ToString("0.#")% off</span>
+                }
+            </div>
+            <p class="product-availability @(Model.Product.StockQuantity > 0 ? "available" : "unavailable")">
+                <span aria-hidden="true">●</span>
+                @if (Model.Product.StockQuantity > 0)
+                {
+                    <text>In stock · @Model.Product.StockQuantity available</text>
+                }
+                else
+                {
+                    <text>Currently out of stock</text>
+                }
+            </p>
+            <div class="product-details-description">
+                <h2>About this product</h2>
+                <p>@Model.Product.Description</p>
+            </div>
+            <div class="product-details-note">Prices are shown in Nepalese rupees (NPR).</div>
+        </div>
+    </div>
+</section>

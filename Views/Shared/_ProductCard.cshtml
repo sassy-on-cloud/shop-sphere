@@ -1,28 +1,24 @@
 ﻿@model ShopSphere.Models.ProductCardViewModel
 
 <article class="product-card h-100">
-    <a class="product-image-wrap" href="#featured" aria-label="View @Model.Name">
+    <a class="product-image-wrap" asp-controller="Product" asp-action="Details" asp-route-id="@Model.ProductId" aria-label="View @Model.Name">
         <img class="product-image" src="@Model.ImageUrl" alt="@Model.Name" loading="lazy" />
-        <span class="product-badge">@Model.DiscountPercent% OFF</span>
+        <span class="product-badge">@Model.DiscountPercent.ToString("0.#")% OFF</span>
     </a>
     <div class="product-info">
-        <h3 class="product-name">@Model.Name</h3>
+        <h3 class="product-name">
+            <a asp-controller="Product" asp-action="Details" asp-route-id="@Model.ProductId">@Model.Name</a>
+        </h3>
         <div class="product-price">
             <strong>NPR @Model.Price.ToString("N0")</strong>
             <del>NPR @Model.OriginalPrice.ToString("N0")</del>
         </div>
         <div class="product-meta">
-            <span class="product-rating" aria-label="@Model.Rating out of 5 stars">★★★★★</span>
-            <span>@Model.Rating.ToString("0.0")</span>
-            <span>(@Model.ReviewCount)</span>
+            <span>@Model.CategoryName</span>
         </div>
-        @if (!string.IsNullOrWhiteSpace(Model.Badge))
-        {
-            <div class="stock-label">
-                <span>@Model.Badge</span>
-                <span>Limited offer</span>
-            </div>
-            <div class="stock-track" aria-hidden="true"><span></span></div>
-        }
+        <div class="stock-label">
+            <span>@Model.Badge</span>
+            <span>@Model.StockQuantity available</span>
+        </div>
     </div>
 </article>

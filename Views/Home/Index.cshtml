@@ -1,26 +1,6 @@
-﻿@using ShopSphere.Models
+﻿@model ShopSphere.Models.HomeIndexViewModel
 @{
     ViewData["Title"] = "Discover great finds";
-
-    var flashDeals = new[]
-    {
-        new ProductCardViewModel("Cloud-soft everyday sneakers", "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=720&q=85", 2499, 3999, 38, 4.8, 126, "Selling fast"),
-        new ProductCardViewModel("Studio wireless headphones", "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=720&q=85", 1899, 2999, 37, 4.7, 84, "Almost gone"),
-        new ProductCardViewModel("Minimal everyday wristwatch", "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=720&q=85", 3299, 5499, 40, 4.9, 52, "Popular pick"),
-        new ProductCardViewModel("Compact instant camera", "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=720&q=85", 7499, 9999, 25, 4.6, 39, "Deal of the day")
-    };
-
-    var featuredProducts = new[]
-    {
-        new ProductCardViewModel("Classic over-ear headphones", "https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=720&q=85", 2199, 3499, 37, 4.8, 211, ""),
-        new ProductCardViewModel("Everyday cotton crew tee", "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=720&q=85", 899, 1499, 40, 4.5, 96, ""),
-        new ProductCardViewModel("Lightweight city backpack", "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=720&q=85", 1799, 2599, 31, 4.7, 143, ""),
-        new ProductCardViewModel("Daily hydration bottle", "https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=720&q=85", 699, 1099, 36, 4.6, 74, ""),
-        new ProductCardViewModel("Fresh notes eau de parfum", "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=720&q=85", 1599, 2299, 30, 4.8, 58, ""),
-        new ProductCardViewModel("Modern analog watch", "https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&w=720&q=85", 2899, 4299, 33, 4.7, 112, ""),
-        new ProductCardViewModel("Soft knit home throw", "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=720&q=85", 1999, 2799, 29, 4.6, 67, ""),
-        new ProductCardViewModel("Everyday running trainers", "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=720&q=85", 2799, 3999, 30, 4.7, 88, "")
-    };
 }
 
 <div class="home-page">
@@ -71,12 +51,13 @@
             <a class="text-link" href="#featured">Explore all <span aria-hidden="true">→</span></a>
         </div>
         <div class="category-grid">
-            <a class="category-card" href="#featured"><span class="category-art fashion" aria-hidden="true">👟</span><strong>Fashion</strong></a>
-            <a class="category-card" href="#featured"><span class="category-art electronics" aria-hidden="true">🎧</span><strong>Electronics</strong></a>
-            <a class="category-card" href="#featured"><span class="category-art home" aria-hidden="true">🛋️</span><strong>Home &amp; living</strong></a>
-            <a class="category-card" href="#featured"><span class="category-art beauty" aria-hidden="true">🧴</span><strong>Beauty</strong></a>
-            <a class="category-card" href="#featured"><span class="category-art sports" aria-hidden="true">🏃</span><strong>Sports &amp; outdoors</strong></a>
-            <a class="category-card" href="#featured"><span class="category-art grocery" aria-hidden="true">🥑</span><strong>Grocery</strong></a>
+            @foreach (var category in Model.Categories)
+            {
+                <a class="category-card" href="#featured">
+                    <span class="category-art"><img src="@category.ImageUrl" alt="" loading="lazy" /></span>
+                    <strong>@category.CategoryName</strong>
+                </a>
+            }
         </div>
     </section>
 
@@ -99,7 +80,7 @@
                 <a class="text-link" href="#featured">See all deals <span aria-hidden="true">→</span></a>
             </div>
             <div class="product-grid">
-                @foreach (var product in flashDeals)
+                @foreach (var product in Model.FlashDeals)
                 {
                     <partial name="_ProductCard" model="product" />
                 }
@@ -117,7 +98,7 @@
             <a class="text-link" href="#categories">View all <span aria-hidden="true">→</span></a>
         </div>
         <div class="product-grid">
-            @foreach (var product in featuredProducts)
+            @foreach (var product in Model.FeaturedProducts)
             {
                 <partial name="_ProductCard" model="product" />
             }

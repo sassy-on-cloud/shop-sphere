@@ -1,14 +1,49 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ShopSphere.Data;
 using ShopSphere.Models;
 
 namespace ShopSphere.Controllers;
 
-public class HomeController : Controller
+public class HomeController(ShopSphereDbContext dbContext) : Controller
 {
-    public IActionResult Index()
+    public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
-        return View();
+        var categories = await dbContext.Categories
+            .AsNoTracking()
+            .OrderBy(category => category.CategoryName)
+            .ToListAsync(cancellationToken);
+
+        var flashDeals = await dbContext.Products
+            .AsNoTracking()
+            .Include(product => product.Category)
+            .Where(product => product.StockQuantity > 0 && product.DiscountPercentage >= 30m)
+            .OrderByDescending(product => product.DiscountPercentage)
+            .ThenByDescending(product => product.CreatedAt)
+            .Take(4)
+            .ToListAsync(cancellationToken);
+
+        var featuredProducts = await dbContext.Products
+            .AsNoTracking()
+            .Include(product => product.Category)
+            .Where(product => product.StockQuantity > 0 && product.DiscountPercentage < 30m)
+            .OrderByDescending(product => product.CreatedAt)
+            .Take(8)
+            .ToListAsync(cancellationToken);
+
+        var viewModel = new HomeIndexViewModel
+        {
+            Categories = categories,
+            FlashDeals = flashDeals
+                .Select(product => ProductCardViewModel.FromProduct(product, "Flash deal"))
+                .ToList(),
+            FeaturedProducts = featuredProducts
+                .Select(product => ProductCardViewModel.FromProduct(product, "Popular pick"))
+                .ToList()
+        };
+
+        return View(viewModel);
     }
 
     public IActionResult Privacy()

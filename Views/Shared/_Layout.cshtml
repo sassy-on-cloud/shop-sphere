@@ -74,10 +74,10 @@
                             </a>
                             <a class="header-action register-link" asp-controller="Account" asp-action="Register">Register</a>
                         }
-                        <a class="header-action cart-action" asp-controller="Home" asp-action="Privacy" aria-label="Shopping bag">
+                        <a class="header-action cart-action" asp-controller="Cart" asp-action="Index" aria-label="Shopping bag">
                             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16l-1.2 12H5.2L4 8Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>
                             <span>Bag</span>
-                            <span class="cart-count">0</span>
+                            @await Component.InvokeAsync("CartCount")
                         </a>
                     </div>
                 </div>
@@ -97,6 +97,16 @@
     </header>
 
     <main role="main">
+        @if (TempData["CartMessage"] is string cartMessage)
+        {
+            var messageType = TempData["CartMessageType"] as string == "success" ? "success" : "warning";
+            <div class="container cart-flash-message" role="status">
+                <div class="alert alert-@messageType alert-dismissible fade show" role="alert">
+                    @cartMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Dismiss"></button>
+                </div>
+            </div>
+        }
         @RenderBody()
     </main>
 

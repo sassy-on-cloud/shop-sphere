@@ -3,12 +3,15 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ShopSphere.Models;
 using ShopSphere.Models.Account;
+using ShopSphere.Services;
 
 namespace ShopSphere.Controllers;
 
 public class AccountController(
     UserManager<ApplicationUser> userManager,
-    SignInManager<ApplicationUser> signInManager) : Controller
+    SignInManager<ApplicationUser> signInManager,
+    ShoppingCartService shoppingCartService,
+    GuestCartCookie guestCartCookie) : Controller
 {
     [AllowAnonymous]
     [HttpGet]
@@ -75,6 +78,11 @@ public class AccountController(
         }
 
         await signInManager.SignInAsync(user, isPersistent: false);
+        await shoppingCartService.MergeGuestCartAsync(
+            user.Id,
+            guestCartCookie.GetToken(HttpContext),
+            cancellationToken);
+        guestCartCookie.Delete(HttpContext);
         return RedirectToAction(nameof(Profile));
     }
 
@@ -113,6 +121,15 @@ public class AccountController(
 
         if (result.Succeeded)
         {
+            var user = await userManager.FindByEmailAsync(model.Email)
+                ?? throw new InvalidOperationException("The signed-in account could not be loaded.");
+            await shoppingCartService.MergeGuestCartAsync(
+                user.Id,
+                guestCartCookie.GetToken(HttpContext),
+                HttpContext.RequestAborted);
+
+            guestCartCookie.Delete(HttpContext);
+
             if (!string.IsNullOrWhiteSpace(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
             {
                 return LocalRedirect(model.ReturnUrl);

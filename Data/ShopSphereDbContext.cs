@@ -11,6 +11,10 @@ public sealed class ShopSphereDbContext(DbContextOptions<ShopSphereDbContext> op
 
     public DbSet<Product> Products => Set<Product>();
 
+    public DbSet<Cart> Carts => Set<Cart>();
+
+    public DbSet<CartItem> CartItems => Set<CartItem>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -45,6 +49,44 @@ public sealed class ShopSphereDbContext(DbContextOptions<ShopSphereDbContext> op
             entity.HasOne(product => product.Category)
                 .WithMany(category => category.Products)
                 .HasForeignKey(product => product.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<Cart>(entity =>
+        {
+            entity.HasKey(cart => cart.CartId);
+            entity.Property(cart => cart.UserId).HasMaxLength(450);
+            entity.Property(cart => cart.GuestCartKey).HasMaxLength(64);
+            entity.Property(cart => cart.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(cart => cart.UpdatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.HasIndex(cart => cart.UserId)
+                .IsUnique()
+                .HasFilter("[UserId] IS NOT NULL");
+            entity.HasIndex(cart => cart.GuestCartKey)
+                .IsUnique()
+                .HasFilter("[GuestCartKey] IS NOT NULL");
+            entity.ToTable(table => table.HasCheckConstraint(
+                "CK_Carts_OneOwner",
+                "([UserId] IS NOT NULL AND [GuestCartKey] IS NULL) OR ([UserId] IS NULL AND [GuestCartKey] IS NOT NULL)"));
+            entity.HasOne(cart => cart.User)
+                .WithMany(user => user.Carts)
+                .HasForeignKey(cart => cart.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<CartItem>(entity =>
+        {
+            entity.HasKey(item => item.CartItemId);
+            entity.HasIndex(item => new { item.CartId, item.ProductId }).IsUnique();
+            entity.Property(item => item.AddedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.ToTable(table => table.HasCheckConstraint("CK_CartItems_Quantity", "[Quantity] > 0"));
+            entity.HasOne(item => item.Cart)
+                .WithMany(cart => cart.Items)
+                .HasForeignKey(item => item.CartId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(item => item.Product)
+                .WithMany(product => product.CartItems)
+                .HasForeignKey(item => item.ProductId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
     }

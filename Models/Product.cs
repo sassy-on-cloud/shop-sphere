@@ -32,5 +32,7 @@ public sealed class Product
 
     public Category Category { get; set; } = null!;
 
+    public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

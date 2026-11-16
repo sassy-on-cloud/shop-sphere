@@ -230,6 +230,83 @@ namespace ShopSphere.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("ShopSphere.Models.Cart", b =>
+                {
+                    b.Property<int>("CartId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CartId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("GuestCartKey")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("UserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("CartId");
+
+                    b.HasIndex("GuestCartKey")
+                        .IsUnique()
+                        .HasFilter("[GuestCartKey] IS NOT NULL");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
+
+                    b.ToTable("Carts", t =>
+                        {
+                            t.HasCheckConstraint("CK_Carts_OneOwner", "([UserId] IS NOT NULL AND [GuestCartKey] IS NULL) OR ([UserId] IS NULL AND [GuestCartKey] IS NOT NULL)");
+                        });
+                });
+
+            modelBuilder.Entity("ShopSphere.Models.CartItem", b =>
+                {
+                    b.Property<int>("CartItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CartItemId"));
+
+                    b.Property<DateTime>("AddedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<int>("CartId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("CartItemId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("CartId", "ProductId")
+                        .IsUnique();
+
+                    b.ToTable("CartItems", t =>
+                        {
+                            t.HasCheckConstraint("CK_CartItems_Quantity", "[Quantity] > 0");
+                        });
+                });
+
             modelBuilder.Entity("ShopSphere.Models.Category", b =>
                 {
                     b.Property<int>("CategoryId")
@@ -364,6 +441,35 @@ namespace ShopSphere.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ShopSphere.Models.Cart", b =>
+                {
+                    b.HasOne("ShopSphere.Models.ApplicationUser", "User")
+                        .WithMany("Carts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ShopSphere.Models.CartItem", b =>
+                {
+                    b.HasOne("ShopSphere.Models.Cart", "Cart")
+                        .WithMany("Items")
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ShopSphere.Models.Product", "Product")
+                        .WithMany("CartItems")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("ShopSphere.Models.Product", b =>
                 {
                     b.HasOne("ShopSphere.Models.Category", "Category")
@@ -375,9 +481,24 @@ namespace ShopSphere.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("ShopSphere.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("Carts");
+                });
+
+            modelBuilder.Entity("ShopSphere.Models.Cart", b =>
+                {
+                    b.Navigation("Items");
+                });
+
             modelBuilder.Entity("ShopSphere.Models.Category", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("ShopSphere.Models.Product", b =>
+                {
+                    b.Navigation("CartItems");
                 });
 #pragma warning restore 612, 618
         }

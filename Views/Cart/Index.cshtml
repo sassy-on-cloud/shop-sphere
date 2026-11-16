@@ -1,0 +1,93 @@
+@model CartViewModel
+@{
+    ViewData["Title"] = "Your shopping bag";
+}
+
+<section class="container cart-page">
+    <div class="section-heading cart-page-heading">
+        <div>
+            <p class="section-kicker">Your picks, all in one place</p>
+            <h1>Your shopping bag <span>(@Model.TotalItems)</span></h1>
+        </div>
+        @if (Model.Items.Count > 0)
+        {
+            <form asp-action="Clear" method="post">
+                @Html.AntiForgeryToken()
+                <button class="cart-clear-button" type="submit">Clear bag</button>
+            </form>
+        }
+    </div>
+
+    @if (Model.Items.Count == 0)
+    {
+        <div class="cart-empty">
+            <span class="cart-empty-icon" aria-hidden="true">⌑</span>
+            <h2>Your bag is taking a little break</h2>
+            <p>Explore the latest finds and add something you love.</p>
+            <a class="cart-primary-button" asp-controller="Product" asp-action="Index">Explore products</a>
+        </div>
+    }
+    else
+    {
+        <div class="cart-layout">
+            <div class="cart-items-list">
+                @foreach (var item in Model.Items)
+                {
+                    <article class="cart-item">
+                        <a class="cart-item-image" asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId">
+                            <img src="@item.ImageUrl" alt="@item.ProductName" />
+                        </a>
+                        <div class="cart-item-info">
+                            <h2><a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId">@item.ProductName</a></h2>
+                            <p class="cart-item-unit-price">NPR @item.UnitPrice.ToString("N2") each</p>
+                            @if (item.StockQuantity == 0)
+                            {
+                                <p class="cart-item-stock unavailable">Currently out of stock. Remove this item to continue.</p>
+                            }
+                            else if (item.Quantity > item.StockQuantity)
+                            {
+                                <p class="cart-item-stock unavailable">Only @item.StockQuantity currently available. Reduce the quantity to continue.</p>
+                            }
+                            else
+                            {
+                                <p class="cart-item-stock available">In stock · @item.StockQuantity available</p>
+                            }
+                            <div class="cart-item-controls">
+                                <form asp-action="ChangeQuantity" method="post" class="quantity-control">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="cartItemId" value="@item.CartItemId" />
+                                    <button type="submit" name="delta" value="-1" aria-label="Decrease quantity">−</button>
+                                    <span aria-live="polite">@item.Quantity</span>
+                                    <button type="submit" name="delta" value="1" aria-label="Increase quantity" disabled="@(item.Quantity >= item.StockQuantity)">+</button>
+                                </form>
+                                <form asp-action="Remove" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="cartItemId" value="@item.CartItemId" />
+                                    <button class="cart-remove-button" type="submit">Remove</button>
+                                </form>
+                            </div>
+                        </div>
+                        <strong class="cart-item-subtotal">NPR @item.Subtotal.ToString("N2")</strong>
+                    </article>
+                }
+            </div>
+
+            <aside class="cart-summary" aria-labelledby="cartSummaryHeading">
+                <h2 id="cartSummaryHeading">Order summary</h2>
+                <div class="cart-summary-line"><span>Items (@Model.TotalItems)</span><strong>NPR @Model.TotalPrice.ToString("N2")</strong></div>
+                <div class="cart-summary-line"><span>Delivery</span><span>Calculated at checkout</span></div>
+                <div class="cart-summary-total"><span>Subtotal</span><strong>NPR @Model.TotalPrice.ToString("N2")</strong></div>
+                <p class="cart-summary-note">Prices are refreshed from the catalog. Delivery fees are not included.</p>
+                @if (Model.Items.Any(item => item.StockQuantity == 0 || item.Quantity > item.StockQuantity))
+                {
+                    <span class="cart-primary-button disabled" aria-disabled="true">Proceed to checkout</span>
+                }
+                else
+                {
+                    <a class="cart-primary-button" asp-action="Checkout">Proceed to checkout</a>
+                }
+                <a class="cart-continue-link" asp-controller="Product" asp-action="Index">Continue shopping</a>
+            </aside>
+        </div>
+    }
+</section>

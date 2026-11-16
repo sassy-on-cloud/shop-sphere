@@ -24,5 +24,12 @@
             <span>@Model.Badge</span>
             <span>@(Model.StockQuantity > 0 ? $"{Model.StockQuantity} available" : "Out of stock")</span>
         </div>
+        <form class="product-card-cart-form" asp-controller="Cart" asp-action="Add" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="ProductId" value="@Model.ProductId" />
+            <input type="hidden" name="Quantity" value="1" />
+            <input type="hidden" name="returnUrl" value="@(Context.Request.Path.ToString() + Context.Request.QueryString.ToString())" />
+            <button class="cart-primary-button" type="submit" disabled="@(Model.StockQuantity <= 0)">Add to bag</button>
+        </form>
     </div>
 </article>

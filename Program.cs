@@ -31,6 +31,9 @@ builder.Services
     .AddEntityFrameworkStores<ShopSphereDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.AddScoped<ShoppingCartService>();
+builder.Services.AddSingleton<GuestCartCookie>();
+
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";

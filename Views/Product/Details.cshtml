@@ -37,6 +37,17 @@
                     <text>Currently out of stock</text>
                 }
             </p>
+            @if (Model.Product.StockQuantity > 0)
+            {
+                <form class="product-details-cart-form" asp-controller="Cart" asp-action="Add" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="ProductId" value="@Model.Product.ProductId" />
+                    <input type="hidden" name="returnUrl" value="@(Context.Request.Path.ToString() + Context.Request.QueryString.ToString())" />
+                    <label for="productQuantity">Quantity</label>
+                    <input id="productQuantity" class="form-control" type="number" name="Quantity" min="1" max="@Model.Product.StockQuantity" value="1" />
+                    <button class="cart-primary-button" type="submit">Add to bag</button>
+                </form>
+            }
             <div class="product-details-description">
                 <h2>About this product</h2>
                 <p>@Model.Product.Description</p>

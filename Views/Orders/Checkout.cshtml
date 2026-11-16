@@ -1,0 +1,112 @@
+@model CheckoutViewModel
+@{
+    ViewData["Title"] = "Checkout";
+    var stockIsValid = Model.Cart.Items.All(item => item.StockQuantity > 0 && item.Quantity <= item.StockQuantity);
+}
+
+<section class="container checkout-page">
+    <a class="order-back-link" asp-controller="Cart" asp-action="Index">← Back to your bag</a>
+    <div class="checkout-heading">
+        <p class="section-kicker">Almost there</p>
+        <h1>Delivery details</h1>
+        <p>Review your items and tell us where to deliver them.</p>
+    </div>
+
+    @if (!stockIsValid)
+    {
+        <div class="alert alert-warning" role="alert">
+            Some quantities are no longer available. Update your bag before placing the order.
+        </div>
+    }
+
+    <div class="checkout-layout">
+        <form class="checkout-form" asp-action="Checkout" method="post">
+            @Html.AntiForgeryToken()
+            <input asp-for="Input.SubmissionToken" type="hidden" />
+            <div asp-validation-summary="All" class="validation-summary"></div>
+            <section class="checkout-form-section" aria-labelledby="deliveryHeading">
+                <h2 id="deliveryHeading">Delivery address</h2>
+                <div class="checkout-field">
+                    <label asp-for="Input.CustomerName"></label>
+                    <input asp-for="Input.CustomerName" class="form-control" autocomplete="name" />
+                    <span asp-validation-for="Input.CustomerName" class="field-validation"></span>
+                </div>
+                <div class="checkout-field">
+                    <label asp-for="Input.PhoneNumber"></label>
+                    <input asp-for="Input.PhoneNumber" class="form-control" autocomplete="tel" />
+                    <span asp-validation-for="Input.PhoneNumber" class="field-validation"></span>
+                </div>
+                <div class="checkout-address-grid">
+                    <div class="checkout-field">
+                        <label asp-for="Input.Province"></label>
+                        <input asp-for="Input.Province" class="form-control" autocomplete="address-level1" />
+                        <span asp-validation-for="Input.Province" class="field-validation"></span>
+                    </div>
+                    <div class="checkout-field">
+                        <label asp-for="Input.District"></label>
+                        <input asp-for="Input.District" class="form-control" autocomplete="address-level2" />
+                        <span asp-validation-for="Input.District" class="field-validation"></span>
+                    </div>
+                    <div class="checkout-field">
+                        <label asp-for="Input.City"></label>
+                        <input asp-for="Input.City" class="form-control" autocomplete="address-level3" />
+                        <span asp-validation-for="Input.City" class="field-validation"></span>
+                    </div>
+                    <div class="checkout-field checkout-field-wide">
+                        <label asp-for="Input.StreetAddress"></label>
+                        <textarea asp-for="Input.StreetAddress" class="form-control" rows="2" autocomplete="street-address"></textarea>
+                        <span asp-validation-for="Input.StreetAddress" class="field-validation"></span>
+                    </div>
+                    <div class="checkout-field checkout-field-wide">
+                        <label asp-for="Input.DeliveryInstructions"></label>
+                        <textarea asp-for="Input.DeliveryInstructions" class="form-control" rows="2" placeholder="Optional"></textarea>
+                        <span asp-validation-for="Input.DeliveryInstructions" class="field-validation"></span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="checkout-payment" aria-labelledby="paymentHeading">
+                <div>
+                    <h2 id="paymentHeading">Payment method</h2>
+                    <p>Pay in cash when your order is delivered.</p>
+                </div>
+                <span class="cod-label">Cash on Delivery</span>
+            </section>
+
+            @if (stockIsValid)
+            {
+                <button class="cart-primary-button checkout-submit" type="submit">Place order · NPR @Model.Cart.TotalPrice.ToString("N2")</button>
+            }
+            else
+            {
+                <a class="cart-primary-button checkout-submit" asp-controller="Cart" asp-action="Index">Review your bag</a>
+            }
+        </form>
+
+        <aside class="checkout-summary" aria-labelledby="checkoutSummaryHeading">
+            <h2 id="checkoutSummaryHeading">Your order <span>(@Model.Cart.TotalItems)</span></h2>
+            <div class="checkout-products">
+                @foreach (var item in Model.Cart.Items)
+                {
+                    <article class="checkout-product">
+                        <img src="@item.ImageUrl" alt="" />
+                        <div>
+                            <h3>@item.ProductName</h3>
+                            <p>Qty @item.Quantity · NPR @item.UnitPrice.ToString("N2") each</p>
+                        </div>
+                        <strong>NPR @item.Subtotal.ToString("N2")</strong>
+                    </article>
+                }
+            </div>
+            <div class="checkout-total">
+                <span>Total due on delivery</span>
+                <strong>NPR @Model.Cart.TotalPrice.ToString("N2")</strong>
+            </div>
+            <p class="checkout-summary-note">Prices and stock are checked again when you place the order.</p>
+        </aside>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

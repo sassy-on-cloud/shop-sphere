@@ -1,0 +1,71 @@
+@model OrderDetailsViewModel
+@{
+    ViewData["Title"] = $"Order {Model.OrderNumber}";
+    var statusClass = $"order-status-{Model.OrderStatus.ToString().ToLowerInvariant()}";
+}
+
+<section class="container orders-page">
+    <a class="order-back-link" asp-action="Index">← Back to my orders</a>
+    @if (TempData["OrderMessage"] is string orderMessage)
+    {
+        var messageType = TempData["OrderMessageType"] as string == "success" ? "success" : "warning";
+        <div class="alert alert-@messageType" role="status">@orderMessage</div>
+    }
+
+    <div class="order-details-heading">
+        <div>
+            <p class="section-kicker">Order details</p>
+            <h1>@Model.OrderNumber</h1>
+            <p>Placed @Model.OrderDate.ToLocalTime().ToString("dd MMM yyyy, h:mm tt")</p>
+        </div>
+        <span class="order-status @statusClass">@Model.OrderStatus</span>
+    </div>
+
+    <div class="order-details-layout">
+        <div class="order-details-main">
+            <section class="order-panel" aria-labelledby="orderItemsHeading">
+                <h2 id="orderItemsHeading">Items in this order</h2>
+                @foreach (var item in Model.Items)
+                {
+                    <article class="order-line">
+                        <img src="@item.ProductImageUrl" alt="" />
+                        <div>
+                            <h3>@item.ProductName</h3>
+                            <p>Qty @item.Quantity · NPR @item.UnitPrice.ToString("N2") each</p>
+                        </div>
+                        <strong>NPR @item.Subtotal.ToString("N2")</strong>
+                    </article>
+                }
+                <div class="order-grand-total"><span>Order total</span><strong>NPR @Model.TotalAmount.ToString("N2")</strong></div>
+            </section>
+
+            <section class="order-panel" aria-labelledby="deliveryAddressHeading">
+                <h2 id="deliveryAddressHeading">Delivery address</h2>
+                <address>
+                    <strong>@Model.CustomerName</strong><br />
+                    @Model.PhoneNumber<br />
+                    @Model.StreetAddress<br />
+                    @Model.City, @Model.District<br />
+                    @Model.Province
+                </address>
+                @if (!string.IsNullOrWhiteSpace(Model.DeliveryInstructions))
+                {
+                    <p class="order-instructions"><strong>Instructions:</strong> @Model.DeliveryInstructions</p>
+                }
+            </section>
+        </div>
+
+        <aside class="order-panel order-payment-panel" aria-labelledby="paymentDetailsHeading">
+            <h2 id="paymentDetailsHeading">Payment</h2>
+            <p><span>Method</span><strong>Cash on Delivery</strong></p>
+            <p><span>Status</span><strong class="payment-pending">@Model.PaymentStatus</strong></p>
+            @if (Model.CanCancel)
+            {
+                <form asp-action="Cancel" asp-route-id="@Model.OrderId" method="post">
+                    @Html.AntiForgeryToken()
+                    <button class="order-cancel-button" type="submit">Cancel order</button>
+                </form>
+            }
+        </aside>
+    </div>
+</section>

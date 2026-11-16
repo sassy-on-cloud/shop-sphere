@@ -98,7 +98,7 @@ public class CartController(
     [HttpGet]
     public IActionResult Checkout()
     {
-        return View();
+        return RedirectToAction("Checkout", "Orders");
     }
 
     private IActionResult RedirectToLocalOrProduct(string? returnUrl, int productId)

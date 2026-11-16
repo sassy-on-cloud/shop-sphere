@@ -1,0 +1,25 @@
+@model OrderDetailsViewModel
+@{
+    ViewData["Title"] = "Order confirmed";
+}
+
+<section class="container order-confirmation-page">
+    <div class="order-confirmation-card">
+        <span class="order-confirmation-mark" aria-hidden="true">✓</span>
+        <p class="section-kicker">Thank you for shopping ShopSphere</p>
+        <h1>Your order is confirmed</h1>
+        <p class="order-confirmation-copy">We’ve received your order and will prepare it for delivery. Pay in cash when it arrives.</p>
+        <div class="order-confirmation-number">
+            <span>Order number</span>
+            <strong>@Model.OrderNumber</strong>
+        </div>
+        <div class="order-confirmation-total">
+            <span>Total due on delivery</span>
+            <strong>NPR @Model.TotalAmount.ToString("N2")</strong>
+        </div>
+        <div class="order-confirmation-actions">
+            <a class="cart-primary-button" asp-action="Details" asp-route-id="@Model.OrderId">View order details</a>
+            <a class="order-secondary-link" asp-action="Index">Go to my orders</a>
+        </div>
+    </div>
+</section>

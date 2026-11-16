@@ -15,6 +15,10 @@ public sealed class ShopSphereDbContext(DbContextOptions<ShopSphereDbContext> op
 
     public DbSet<CartItem> CartItems => Set<CartItem>();
 
+    public DbSet<Order> Orders => Set<Order>();
+
+    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -88,6 +92,64 @@ public sealed class ShopSphereDbContext(DbContextOptions<ShopSphereDbContext> op
                 .WithMany(product => product.CartItems)
                 .HasForeignKey(item => item.ProductId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<Order>(entity =>
+        {
+            entity.HasKey(order => order.OrderId);
+            entity.Property(order => order.OrderNumber).HasMaxLength(32).IsRequired();
+            entity.Property(order => order.UserId).HasMaxLength(450).IsRequired();
+            entity.Property(order => order.TotalAmount).HasPrecision(18, 2);
+            entity.Property(order => order.CustomerName).HasMaxLength(120).IsRequired();
+            entity.Property(order => order.PhoneNumber).HasMaxLength(32).IsRequired();
+            entity.Property(order => order.Province).HasMaxLength(100).IsRequired();
+            entity.Property(order => order.District).HasMaxLength(100).IsRequired();
+            entity.Property(order => order.City).HasMaxLength(100).IsRequired();
+            entity.Property(order => order.StreetAddress).HasMaxLength(300).IsRequired();
+            entity.Property(order => order.DeliveryInstructions).HasMaxLength(500);
+            entity.Property(order => order.PaymentMethod).HasConversion<string>().HasMaxLength(32);
+            entity.Property(order => order.PaymentStatus).HasConversion<string>().HasMaxLength(32);
+            entity.Property(order => order.OrderStatus).HasConversion<string>().HasMaxLength(32);
+            entity.Property(order => order.OrderDate).HasDefaultValueSql("GETUTCDATE()");
+            entity.HasIndex(order => order.OrderNumber).IsUnique();
+            entity.HasIndex(order => new { order.UserId, order.SubmissionToken }).IsUnique();
+            entity.HasIndex(order => new { order.UserId, order.OrderDate });
+            entity.ToTable(table =>
+            {
+                table.HasCheckConstraint(
+                    "CK_Orders_OrderStatus",
+                    "[OrderStatus] IN ('Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled')");
+                table.HasCheckConstraint(
+                    "CK_Orders_PaymentStatus",
+                    "[PaymentStatus] IN ('Pending', 'Paid', 'Refunded')");
+                table.HasCheckConstraint(
+                    "CK_Orders_PaymentMethod",
+                    "[PaymentMethod] = 'CashOnDelivery'");
+            });
+            entity.HasOne(order => order.User)
+                .WithMany(user => user.Orders)
+                .HasForeignKey(order => order.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<OrderItem>(entity =>
+        {
+            entity.HasKey(item => item.OrderItemId);
+            entity.Property(item => item.ProductName).HasMaxLength(160).IsRequired();
+            entity.Property(item => item.ProductImageUrl).HasMaxLength(2048).IsRequired();
+            entity.Property(item => item.UnitPrice).HasPrecision(18, 2);
+            entity.Property(item => item.Subtotal).HasPrecision(18, 2);
+            entity.HasIndex(item => item.OrderId);
+            entity.HasIndex(item => item.ProductId);
+            entity.ToTable(table => table.HasCheckConstraint("CK_OrderItems_Quantity", "[Quantity] > 0"));
+            entity.HasOne(item => item.Order)
+                .WithMany(order => order.Items)
+                .HasForeignKey(item => item.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(item => item.Product)
+                .WithMany(product => product.OrderItems)
+                .HasForeignKey(item => item.ProductId)
+                .OnDelete(DeleteBehavior.SetNull);
         });
     }
 }

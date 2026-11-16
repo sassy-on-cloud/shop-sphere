@@ -32,6 +32,7 @@ builder.Services
     .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<ShoppingCartService>();
+builder.Services.AddScoped<OrderService>();
 builder.Services.AddSingleton<GuestCartCookie>();
 
 builder.Services.ConfigureApplicationCookie(options =>

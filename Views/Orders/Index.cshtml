@@ -1,11 +1,51 @@
-﻿@{
+@model IReadOnlyList<OrderSummaryViewModel>
+@{
     ViewData["Title"] = "My orders";
 }
 
-<section class="container auth-page">
-    <div class="auth-card auth-message-card">
+<section class="container orders-page">
+    <div class="orders-heading">
         <p class="section-kicker">Your ShopSphere</p>
         <h1>My orders</h1>
-        <p class="auth-intro">Order history will be available in a later phase.</p>
+        <p>Keep track of your purchases and delivery progress.</p>
     </div>
+
+    @if (TempData["OrderMessage"] is string orderMessage)
+    {
+        var messageType = TempData["OrderMessageType"] as string == "success" ? "success" : "warning";
+        <div class="alert alert-@messageType" role="status">@orderMessage</div>
+    }
+
+    @if (Model.Count == 0)
+    {
+        <div class="orders-empty">
+            <h2>No orders just yet</h2>
+            <p>When you place an order, its status and details will appear here.</p>
+            <a class="cart-primary-button" asp-controller="Product" asp-action="Index">Explore products</a>
+        </div>
+    }
+    else
+    {
+        <div class="orders-list">
+            @foreach (var order in Model)
+            {
+                var statusClass = $"order-status-{order.OrderStatus.ToString().ToLowerInvariant()}";
+                <article class="order-card">
+                    <div class="order-card-main">
+                        <div>
+                            <span class="order-card-label">Order number</span>
+                            <h2><a asp-action="Details" asp-route-id="@order.OrderId">@order.OrderNumber</a></h2>
+                        </div>
+                        <span class="order-status @statusClass">@order.OrderStatus</span>
+                    </div>
+                    <div class="order-card-meta">
+                        <span>Placed @order.OrderDate.ToLocalTime().ToString("dd MMM yyyy, h:mm tt")</span>
+                        <span>Cash on Delivery</span>
+                        <strong>NPR @order.TotalAmount.ToString("N2")</strong>
+                    </div>
+                    <a class="order-card-link" asp-action="Details" asp-route-id="@order.OrderId">View order details <span aria-hidden="true">→</span></a>
+                </article>
+            }
+        </div>
+    }
 </section>

@@ -1,0 +1,70 @@
+@model OrderManagementViewModel
+@{
+    ViewData["Title"] = "Orders";
+}
+<div class="admin-page-heading">
+    <div>
+        <p class="admin-eyebrow">FULFILLMENT</p>
+        <h1>Orders <span class="admin-heading-count">@Model.TotalOrders</span></h1>
+        <p class="admin-page-subtitle">Review delivery information and manage order progress.</p>
+    </div>
+</div>
+<section class="admin-panel">
+    <form class="admin-filter-form admin-order-filters" method="get" asp-area="Admin" asp-controller="Orders" asp-action="Index">
+        <label class="admin-search-field">
+            <span class="visually-hidden">Search by order number</span>
+            <input class="form-control" type="search" name="search" value="@Model.Search" placeholder="Order number..." maxlength="120" />
+        </label>
+        <label>
+            <span class="visually-hidden">Order status</span>
+            <select class="form-select" name="status">
+                <option value="">All statuses</option>
+                @foreach (var orderStatus in Enum.GetValues<OrderStatus>())
+                {
+                    <option value="@orderStatus" selected="@(Model.Status == orderStatus)">@orderStatus</option>
+                }
+            </select>
+        </label>
+        <label>
+            <span class="visually-hidden">From date</span>
+            <input class="form-control" type="date" name="fromDate" value="@Model.FromDate?.ToString("yyyy-MM-dd")" aria-label="From date" />
+        </label>
+        <label>
+            <span class="visually-hidden">To date</span>
+            <input class="form-control" type="date" name="toDate" value="@Model.ToDate?.ToString("yyyy-MM-dd")" aria-label="To date" />
+        </label>
+        <button class="btn admin-secondary-button" type="submit">Apply</button>
+        <a class="admin-clear-link" asp-area="Admin" asp-controller="Orders" asp-action="Index">Clear</a>
+    </form>
+
+    @if (Model.Orders.Count == 0)
+    {
+        <div class="admin-empty-state">
+            <span class="admin-empty-icon" aria-hidden="true">▤</span>
+            <h2>No orders found</h2>
+            <p>Try adjusting your search or filters.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table admin-table">
+                <thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Total</th><th>Status</th><th></th></tr></thead>
+                <tbody>
+                @foreach (var order in Model.Orders)
+                {
+                    <tr>
+                        <td><a class="admin-table-primary" asp-area="Admin" asp-controller="Orders" asp-action="Details" asp-route-id="@order.OrderId">@order.OrderNumber</a></td>
+                        <td>@order.CustomerName</td>
+                        <td>@order.OrderDate.ToLocalTime().ToString("dd MMM yyyy, h:mm tt")</td>
+                        <td>NPR @order.TotalAmount.ToString("N2")</td>
+                        <td><span class="admin-status status-@order.OrderStatus.ToString().ToLowerInvariant()">@order.OrderStatus</span></td>
+                        <td class="text-end"><a class="admin-text-link" asp-area="Admin" asp-controller="Orders" asp-action="Details" asp-route-id="@order.OrderId">View order →</a></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        <partial name="_AdminPagination" model="@(new AdminPaginationViewModel(Model.Page, Model.TotalPages, Model.Search, Status: Model.Status, FromDate: Model.FromDate, ToDate: Model.ToDate))" />
+    }
+</section>

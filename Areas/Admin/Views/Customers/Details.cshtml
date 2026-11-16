@@ -1,0 +1,48 @@
+@model AdminCustomerDetailsViewModel
+@{
+    ViewData["Title"] = "Customer details";
+}
+<div class="admin-page-heading">
+    <div>
+        <a class="admin-back-link" asp-area="Admin" asp-controller="Customers" asp-action="Index">← Customers</a>
+        <p class="admin-eyebrow">CUSTOMER PROFILE</p>
+        <h1>@Model.FullName</h1>
+        <p class="admin-page-subtitle">Customer account information and order history.</p>
+    </div>
+</div>
+<section class="admin-panel admin-customer-profile">
+    <div class="admin-customer-profile-avatar" aria-hidden="true">@Model.FullName.Trim().FirstOrDefault()</div>
+    <dl class="admin-detail-list">
+        <dt>Full name</dt><dd>@Model.FullName</dd>
+        <dt>Email</dt><dd><a href="mailto:@Model.Email">@Model.Email</a></dd>
+        <dt>Phone</dt><dd>@(string.IsNullOrWhiteSpace(Model.PhoneNumber) ? "Not provided" : Model.PhoneNumber)</dd>
+        <dt>Account created</dt><dd>@Model.CreatedAt.ToLocalTime().ToString("dd MMMM yyyy")</dd>
+    </dl>
+</section>
+<section class="admin-panel admin-customer-orders">
+    <div class="admin-panel-heading"><div><h2>Order history</h2><p>@Model.Orders.Count order(s) on record</p></div></div>
+    @if (Model.Orders.Count == 0)
+    {
+        <p class="admin-empty">This customer has not placed an order.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table admin-table">
+                <thead><tr><th>Order</th><th>Date</th><th>Total</th><th>Payment</th><th>Status</th></tr></thead>
+                <tbody>
+                @foreach (var order in Model.Orders)
+                {
+                    <tr>
+                        <td><a class="admin-table-primary" asp-area="Admin" asp-controller="Orders" asp-action="Details" asp-route-id="@order.OrderId">@order.OrderNumber</a></td>
+                        <td>@order.OrderDate.ToLocalTime().ToString("dd MMM yyyy")</td>
+                        <td>NPR @order.TotalAmount.ToString("N2")</td>
+                        <td>@order.PaymentMethod</td>
+                        <td><span class="admin-status status-@order.OrderStatus.ToString().ToLowerInvariant()">@order.OrderStatus</span></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

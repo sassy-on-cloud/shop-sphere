@@ -7,8 +7,7 @@ namespace ShopSphere.Controllers;
 [Authorize(Roles = ApplicationRoles.Admin)]
 public sealed class AdminController : Controller
 {
-    public IActionResult Index()
-    {
-        return View();
-    }
+    [HttpGet]
+    public IActionResult Index() =>
+        RedirectToAction("Index", "Dashboard", new { area = "Admin" });
 }

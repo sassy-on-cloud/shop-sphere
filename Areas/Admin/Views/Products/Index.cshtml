@@ -1,0 +1,88 @@
+@model ProductManagementViewModel
+@{
+    ViewData["Title"] = "Products";
+}
+
+<div class="admin-page-heading">
+    <div>
+        <p class="admin-eyebrow">CATALOG</p>
+        <h1>Products <span class="admin-heading-count">@Model.TotalProducts</span></h1>
+        <p class="admin-page-subtitle">Manage product details, pricing, categories, and inventory.</p>
+    </div>
+    <a class="btn admin-primary-button" asp-area="Admin" asp-controller="Products" asp-action="Create">Add product</a>
+</div>
+
+<section class="admin-panel">
+    <form class="admin-filter-form" method="get" asp-area="Admin" asp-controller="Products" asp-action="Index">
+        <label class="admin-search-field">
+            <span class="visually-hidden">Search products</span>
+            <input class="form-control" type="search" name="search" value="@Model.Search" placeholder="Search products..." maxlength="160" />
+        </label>
+        <label>
+            <span class="visually-hidden">Category</span>
+            <select class="form-select" name="categoryId">
+                <option value="">All categories</option>
+                @foreach (var category in Model.Categories)
+                {
+                    <option value="@category.Value" selected="@(Model.CategoryId?.ToString() == category.Value)">@category.Text</option>
+                }
+            </select>
+        </label>
+        <button class="btn admin-secondary-button" type="submit">Filter</button>
+        <a class="admin-clear-link" asp-area="Admin" asp-controller="Products" asp-action="Index">Clear</a>
+    </form>
+
+    @if (Model.Products.Count == 0)
+    {
+        <div class="admin-empty-state">
+            <span class="admin-empty-icon" aria-hidden="true">▦</span>
+            <h2>No products found</h2>
+            <p>Try changing the search or category, or add your first product.</p>
+            <a class="btn admin-primary-button" asp-area="Admin" asp-controller="Products" asp-action="Create">Add product</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table admin-table admin-product-table">
+                <thead>
+                    <tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th class="text-end">Actions</th></tr>
+                </thead>
+                <tbody>
+                @foreach (var product in Model.Products)
+                {
+                    var discountedPrice = decimal.Round(product.Price * (100m - product.DiscountPercentage) / 100m, 2, MidpointRounding.AwayFromZero);
+                    <tr>
+                        <td>
+                            <div class="admin-product-cell">
+                                <img src="@product.ImageUrl" alt="" loading="lazy" />
+                                <span>
+                                    <a class="admin-table-primary" asp-area="Admin" asp-controller="Products" asp-action="Details" asp-route-id="@product.ProductId">@product.ProductName</a>
+                                    @if (product.DiscountPercentage > 0)
+                                    {
+                                        <small class="admin-discount-label">@product.DiscountPercentage% off</small>
+                                    }
+                                </span>
+                            </div>
+                        </td>
+                        <td>@product.CategoryName</td>
+                        <td>
+                            <strong>NPR @discountedPrice.ToString("N2")</strong>
+                            @if (product.DiscountPercentage > 0)
+                            {
+                                <small class="admin-price-original">NPR @product.Price.ToString("N2")</small>
+                            }
+                        </td>
+                        <td><span class="admin-stock-count @(product.StockQuantity <= 5 ? "is-low" : "")">@product.StockQuantity</span></td>
+                        <td class="text-end admin-row-actions">
+                            <a asp-area="Admin" asp-controller="Products" asp-action="Edit" asp-route-id="@product.ProductId">Edit</a>
+                            <a asp-area="Admin" asp-controller="Products" asp-action="Details" asp-route-id="@product.ProductId">View</a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        <partial name="_AdminPagination" model="@(new AdminPaginationViewModel(Model.Page, Model.TotalPages, Model.Search, Model.CategoryId))" />
+    }
+</section>

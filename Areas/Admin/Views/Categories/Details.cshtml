@@ -1,0 +1,28 @@
+@model CategoryDetailsViewModel
+@{
+    ViewData["Title"] = "Category details";
+}
+<div class="admin-page-heading">
+    <div>
+        <a class="admin-back-link" asp-area="Admin" asp-controller="Categories" asp-action="Index">← Categories</a>
+        <p class="admin-eyebrow">CATEGORY DETAILS</p>
+        <h1>@Model.CategoryName</h1>
+        <p class="admin-page-subtitle">Category details and assigned products.</p>
+    </div>
+    <a class="btn admin-primary-button" asp-area="Admin" asp-controller="Categories" asp-action="Edit" asp-route-id="@Model.CategoryId">Edit category</a>
+</div>
+<section class="admin-panel admin-category-detail">
+    <img src="@Model.ImageUrl" alt="@Model.CategoryName" />
+    <div>
+        <span class="admin-detail-label">Products assigned</span>
+        <p class="admin-detail-value">@Model.ProductCount</p>
+        <span class="admin-detail-label">Description</span>
+        <p class="admin-description">@(string.IsNullOrWhiteSpace(Model.Description) ? "No description provided." : Model.Description)</p>
+        <div class="admin-danger-zone">
+            <span>Categories containing products cannot be deleted.</span>
+            <form asp-area="Admin" asp-controller="Categories" asp-action="Delete" asp-route-id="@Model.CategoryId" method="post" onsubmit="return confirm('Delete this category?');">
+                <button class="btn admin-danger-button" type="submit">Delete category</button>
+            </form>
+        </div>
+    </div>
+</section>

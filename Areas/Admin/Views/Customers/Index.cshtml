@@ -1,0 +1,50 @@
+@model CustomerManagementViewModel
+@{
+    ViewData["Title"] = "Customers";
+}
+<div class="admin-page-heading">
+    <div>
+        <p class="admin-eyebrow">CUSTOMERS</p>
+        <h1>Customers <span class="admin-heading-count">@Model.TotalCustomers</span></h1>
+        <p class="admin-page-subtitle">View registered customer profiles and order histories.</p>
+    </div>
+</div>
+<section class="admin-panel">
+    <form class="admin-filter-form" method="get" asp-area="Admin" asp-controller="Customers" asp-action="Index">
+        <label class="admin-search-field">
+            <span class="visually-hidden">Search customers</span>
+            <input class="form-control" type="search" name="search" value="@Model.Search" placeholder="Search name, email, or phone..." maxlength="120" />
+        </label>
+        <button class="btn admin-secondary-button" type="submit">Search</button>
+        <a class="admin-clear-link" asp-area="Admin" asp-controller="Customers" asp-action="Index">Clear</a>
+    </form>
+
+    @if (Model.Customers.Count == 0)
+    {
+        <div class="admin-empty-state">
+            <span class="admin-empty-icon" aria-hidden="true">♙</span>
+            <h2>No customers found</h2>
+            <p>Try another name, email, or phone number.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table admin-table">
+                <thead><tr><th>Customer</th><th>Email</th><th>Joined</th><th class="text-end">Details</th></tr></thead>
+                <tbody>
+                @foreach (var customer in Model.Customers)
+                {
+                    <tr>
+                        <td><strong class="admin-table-primary">@customer.FullName</strong></td>
+                        <td>@customer.Email</td>
+                        <td>@customer.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")</td>
+                        <td class="text-end"><a class="admin-text-link" asp-area="Admin" asp-controller="Customers" asp-action="Details" asp-route-id="@customer.UserId">View profile →</a></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        <partial name="_AdminPagination" model="@(new AdminPaginationViewModel(Model.Page, Model.TotalPages, Model.Search))" />
+    }
+</section>

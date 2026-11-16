@@ -1,0 +1,69 @@
+@model AdminOrderDetailsViewModel
+@{
+    ViewData["Title"] = $"Order {Model.Order.OrderNumber}";
+}
+<div class="admin-page-heading">
+    <div>
+        <a class="admin-back-link" asp-area="Admin" asp-controller="Orders" asp-action="Index">← Orders</a>
+        <p class="admin-eyebrow">ORDER DETAILS</p>
+        <h1>@Model.Order.OrderNumber</h1>
+        <p class="admin-page-subtitle">Placed @Model.Order.OrderDate.ToLocalTime().ToString("dd MMMM yyyy 'at' h:mm tt")</p>
+    </div>
+    <span class="admin-status admin-status-large status-@Model.Order.OrderStatus.ToString().ToLowerInvariant()">@Model.Order.OrderStatus</span>
+</div>
+
+<div class="admin-order-detail-grid">
+    <section class="admin-panel">
+        <div class="admin-panel-heading">
+            <div><h2>Items ordered</h2><p>@Model.Order.Items.Sum(item => item.Quantity) total item(s)</p></div>
+        </div>
+        <div class="admin-order-items">
+            @foreach (var item in Model.Order.Items)
+            {
+                <div class="admin-order-item">
+                    <img src="@item.ProductImageUrl" alt="" />
+                    <div><strong>@item.ProductName</strong><small>@item.Quantity × NPR @item.UnitPrice.ToString("N2")</small></div>
+                    <strong>NPR @item.Subtotal.ToString("N2")</strong>
+                </div>
+            }
+        </div>
+        <div class="admin-order-total"><span>Total · Cash on Delivery</span><strong>NPR @Model.Order.TotalAmount.ToString("N2")</strong></div>
+    </section>
+
+    <aside class="admin-order-aside">
+        <section class="admin-panel">
+            <div class="admin-panel-heading"><div><h2>Delivery</h2><p>Customer-provided details</p></div></div>
+            <dl class="admin-detail-list">
+                <dt>Name</dt><dd>@Model.Order.CustomerName</dd>
+                <dt>Email</dt><dd><a href="mailto:@Model.CustomerEmail">@Model.CustomerEmail</a></dd>
+                <dt>Phone</dt><dd><a href="tel:@Model.Order.PhoneNumber">@Model.Order.PhoneNumber</a></dd>
+                <dt>Address</dt><dd>@Model.Order.StreetAddress<br />@Model.Order.City, @Model.Order.District<br />@Model.Order.Province</dd>
+                @if (!string.IsNullOrWhiteSpace(Model.Order.DeliveryInstructions))
+                {
+                    <dt>Instructions</dt><dd>@Model.Order.DeliveryInstructions</dd>
+                }
+                <dt>Payment</dt><dd>@Model.Order.PaymentMethod · @Model.Order.PaymentStatus</dd>
+            </dl>
+        </section>
+
+        <section class="admin-panel">
+            <div class="admin-panel-heading"><div><h2>Update status</h2><p>Only valid next steps are available.</p></div></div>
+            @if (Model.AllowedTransitions.Count == 0)
+            {
+                <p class="admin-empty">This order is in a terminal status.</p>
+            }
+            else
+            {
+                <div class="admin-transition-list">
+                    @foreach (var transition in Model.AllowedTransitions)
+                    {
+                        <form asp-area="Admin" asp-controller="Orders" asp-action="UpdateStatus" asp-route-id="@Model.Order.OrderId" method="post" onsubmit="return confirm('@(transition == OrderStatus.Cancelled ? "Cancel this order and restore its stock?" : $"Move this order to {transition}?")');">
+                            <input type="hidden" name="status" value="@transition" />
+                            <button class="btn @(transition == OrderStatus.Cancelled ? "admin-danger-button" : "admin-secondary-button")" type="submit">@(transition == OrderStatus.Cancelled ? "Cancel order" : $"Mark {transition}")</button>
+                        </form>
+                    }
+                </div>
+            }
+        </section>
+    </aside>
+</div>

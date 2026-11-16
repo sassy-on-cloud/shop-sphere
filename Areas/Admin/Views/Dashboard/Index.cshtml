@@ -1,0 +1,136 @@
+@model AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="admin-page-heading">
+    <div>
+        <p class="admin-eyebrow">OVERVIEW</p>
+        <h1>Dashboard</h1>
+        <p class="admin-page-subtitle">A live snapshot of your ShopSphere store.</p>
+    </div>
+</div>
+
+<section class="admin-stat-grid" aria-label="Store statistics">
+    <a class="admin-stat-card" asp-area="Admin" asp-controller="Products" asp-action="Index">
+        <span class="admin-stat-label">Products</span>
+        <strong>@Model.TotalProducts</strong>
+        <span class="admin-stat-foot">Manage catalog <span aria-hidden="true">→</span></span>
+    </a>
+    <a class="admin-stat-card" asp-area="Admin" asp-controller="Categories" asp-action="Index">
+        <span class="admin-stat-label">Categories</span>
+        <strong>@Model.TotalCategories</strong>
+        <span class="admin-stat-foot">Browse categories <span aria-hidden="true">→</span></span>
+    </a>
+    <a class="admin-stat-card" asp-area="Admin" asp-controller="Customers" asp-action="Index">
+        <span class="admin-stat-label">Customers</span>
+        <strong>@Model.TotalCustomers</strong>
+        <span class="admin-stat-foot">Registered accounts <span aria-hidden="true">→</span></span>
+    </a>
+    <a class="admin-stat-card" asp-area="Admin" asp-controller="Orders" asp-action="Index">
+        <span class="admin-stat-label">Orders</span>
+        <strong>@Model.TotalOrders</strong>
+        <span class="admin-stat-foot">@Model.PendingOrders pending</span>
+    </a>
+    <div class="admin-stat-card admin-stat-card-accent">
+        <span class="admin-stat-label">Delivered revenue</span>
+        <strong>NPR @Model.DeliveredRevenue.ToString("N2")</strong>
+        <span class="admin-stat-foot">Delivered COD orders only</span>
+    </div>
+    <a class="admin-stat-card" asp-area="Admin" asp-controller="Products" asp-action="Index">
+        <span class="admin-stat-label">Low-stock products</span>
+        <strong>@Model.LowStockProducts</strong>
+        <span class="admin-stat-foot">At or below 5 units</span>
+    </a>
+</section>
+
+<div class="admin-dashboard-grid">
+    <section class="admin-panel">
+        <div class="admin-panel-heading">
+            <div>
+                <h2>Recent orders</h2>
+                <p>Latest order activity</p>
+            </div>
+            <a class="admin-text-link" asp-area="Admin" asp-controller="Orders" asp-action="Index">All orders</a>
+        </div>
+        @if (Model.RecentOrders.Count == 0)
+        {
+            <p class="admin-empty">No orders have been placed yet.</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table admin-table">
+                    <thead>
+                        <tr><th>Order</th><th>Customer</th><th>Date</th><th>Total</th><th>Status</th></tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var order in Model.RecentOrders)
+                    {
+                        <tr>
+                            <td><a class="admin-table-primary" asp-area="Admin" asp-controller="Orders" asp-action="Details" asp-route-id="@order.OrderId">@order.OrderNumber</a></td>
+                            <td>@order.CustomerName</td>
+                            <td>@order.OrderDate.ToLocalTime().ToString("dd MMM yyyy")</td>
+                            <td>NPR @order.TotalAmount.ToString("N2")</td>
+                            <td><span class="admin-status status-@order.OrderStatus.ToString().ToLowerInvariant()">@order.OrderStatus</span></td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+
+    <section class="admin-panel">
+        <div class="admin-panel-heading">
+            <div>
+                <h2>Inventory alerts</h2>
+                <p>Products with 5 units or fewer</p>
+            </div>
+            <a class="admin-text-link" asp-area="Admin" asp-controller="Products" asp-action="Index">Products</a>
+        </div>
+        @if (Model.LowStockAlerts.Count == 0)
+        {
+            <p class="admin-empty">No low-stock products to report.</p>
+        }
+        else
+        {
+            <ul class="admin-alert-list">
+                @foreach (var product in Model.LowStockAlerts)
+                {
+                    <li>
+                        <a asp-area="Admin" asp-controller="Products" asp-action="Details" asp-route-id="@product.ProductId">@product.ProductName</a>
+                        <span class="admin-stock-count @(product.StockQuantity == 0 ? "is-empty" : "")">@product.StockQuantity left</span>
+                    </li>
+                }
+            </ul>
+        }
+    </section>
+
+    <section class="admin-panel admin-panel-wide">
+        <div class="admin-panel-heading">
+            <div>
+                <h2>New customers</h2>
+                <p>Recently registered customer accounts</p>
+            </div>
+            <a class="admin-text-link" asp-area="Admin" asp-controller="Customers" asp-action="Index">All customers</a>
+        </div>
+        @if (Model.RecentCustomers.Count == 0)
+        {
+            <p class="admin-empty">No customer accounts have registered yet.</p>
+        }
+        else
+        {
+            <div class="admin-customer-strip">
+                @foreach (var customer in Model.RecentCustomers)
+                {
+                    <a class="admin-customer-chip" asp-area="Admin" asp-controller="Customers" asp-action="Details" asp-route-id="@customer.UserId">
+                        <span class="admin-avatar" aria-hidden="true">@customer.FullName.Trim().FirstOrDefault()</span>
+                        <span><strong>@customer.FullName</strong><small>@customer.Email</small></span>
+                        <time>@customer.CreatedAt.ToLocalTime().ToString("dd MMM")</time>
+                    </a>
+                }
+            </div>
+        }
+    </section>
+</div>

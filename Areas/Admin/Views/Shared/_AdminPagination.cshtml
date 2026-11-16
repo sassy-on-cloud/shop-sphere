@@ -1,0 +1,23 @@
+@model AdminPaginationViewModel
+@if (Model.TotalPages > 1)
+{
+    <nav class="admin-pagination" aria-label="Pagination">
+        @if (Model.Page > 1)
+        {
+            <a asp-area="Admin" asp-route-page="@(Model.Page - 1)" asp-route-search="@Model.Search" asp-route-categoryId="@Model.CategoryId" asp-route-status="@Model.Status" asp-route-fromDate="@Model.FromDate?.ToString("yyyy-MM-dd")" asp-route-toDate="@Model.ToDate?.ToString("yyyy-MM-dd")" aria-label="Previous page">‹</a>
+        }
+        else
+        {
+            <span class="is-disabled" aria-disabled="true">‹</span>
+        }
+        <span>Page @Model.Page of @Model.TotalPages</span>
+        @if (Model.Page < Model.TotalPages)
+        {
+            <a asp-area="Admin" asp-route-page="@(Model.Page + 1)" asp-route-search="@Model.Search" asp-route-categoryId="@Model.CategoryId" asp-route-status="@Model.Status" asp-route-fromDate="@Model.FromDate?.ToString("yyyy-MM-dd")" asp-route-toDate="@Model.ToDate?.ToString("yyyy-MM-dd")" aria-label="Next page">›</a>
+        }
+        else
+        {
+            <span class="is-disabled" aria-disabled="true">›</span>
+        }
+    </nav>
+}

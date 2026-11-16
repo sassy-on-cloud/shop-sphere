@@ -33,6 +33,7 @@ builder.Services
 
 builder.Services.AddScoped<ShoppingCartService>();
 builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<ProductImageStorageService>();
 builder.Services.AddSingleton<GuestCartCookie>();
 
 builder.Services.ConfigureApplicationCookie(options =>
@@ -74,12 +75,18 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}")
+    .WithStaticAssets();
 
 app.MapControllerRoute(
     name: "default",

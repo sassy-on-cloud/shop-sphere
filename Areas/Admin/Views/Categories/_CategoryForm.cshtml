@@ -1,0 +1,14 @@
+@model CategoryFormViewModel
+<div asp-validation-summary="ModelOnly" class="validation-summary-errors" role="alert"></div>
+<label asp-for="CategoryName" class="form-label"></label>
+<input asp-for="CategoryName" class="form-control" autocomplete="off" />
+<span asp-validation-for="CategoryName" class="text-danger"></span>
+
+<label asp-for="Description" class="form-label mt-3"></label>
+<textarea asp-for="Description" class="form-control" rows="5"></textarea>
+<span asp-validation-for="Description" class="text-danger"></span>
+
+<label asp-for="ImageUrl" class="form-label mt-3"></label>
+<input asp-for="ImageUrl" class="form-control" />
+<span asp-validation-for="ImageUrl" class="text-danger"></span>
+<small class="form-text">Use an HTTPS image URL or a path inside the website.</small>

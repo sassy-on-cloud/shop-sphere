@@ -1,0 +1,33 @@
+@model Product
+@{
+    ViewData["Title"] = "Product details";
+    var discountedPrice = decimal.Round(Model.Price * (100m - Model.DiscountPercentage) / 100m, 2, MidpointRounding.AwayFromZero);
+}
+<div class="admin-page-heading">
+    <div>
+        <a class="admin-back-link" asp-area="Admin" asp-controller="Products" asp-action="Index">← Products</a>
+        <p class="admin-eyebrow">PRODUCT DETAILS</p>
+        <h1>@Model.ProductName</h1>
+        <p class="admin-page-subtitle">Catalog and inventory information.</p>
+    </div>
+    <a class="btn admin-primary-button" asp-area="Admin" asp-controller="Products" asp-action="Edit" asp-route-id="@Model.ProductId">Edit product</a>
+</div>
+<section class="admin-panel admin-product-detail">
+    <img src="@Model.ImageUrl" alt="@Model.ProductName" />
+    <div>
+        <span class="admin-detail-label">Category</span>
+        <p class="admin-detail-value">@Model.Category.CategoryName</p>
+        <span class="admin-detail-label">Price</span>
+        <p class="admin-detail-value">NPR @discountedPrice.ToString("N2") @if (Model.DiscountPercentage > 0) { <small class="admin-price-original">NPR @Model.Price.ToString("N2") · @Model.DiscountPercentage% off</small> }</p>
+        <span class="admin-detail-label">Stock</span>
+        <p class="admin-detail-value">@Model.StockQuantity units</p>
+        <span class="admin-detail-label">Description</span>
+        <p class="admin-description">@Model.Description</p>
+        <div class="admin-danger-zone">
+            <span>Deleting is blocked when this product is referenced by a customer bag or other record.</span>
+            <form asp-area="Admin" asp-controller="Products" asp-action="Delete" asp-route-id="@Model.ProductId" method="post" onsubmit="return confirm('Delete this product? This cannot be undone.');">
+                <button class="btn admin-danger-button" type="submit">Delete product</button>
+            </form>
+        </div>
+    </div>
+</section>

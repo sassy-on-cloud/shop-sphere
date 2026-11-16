@@ -28,6 +28,13 @@ public enum OrderCancellationStatus
     NotCancelable
 }
 
+public enum OrderStatusUpdateStatus
+{
+    Updated,
+    NotFound,
+    InvalidTransition
+}
+
 public sealed class OrderService(ShopSphereDbContext dbContext)
 {
     private const decimal MaximumOrderAmount = 9999999999999999.99m;
@@ -282,23 +289,70 @@ public sealed class OrderService(ShopSphereDbContext dbContext)
             return OrderCancellationStatus.NotCancelable;
         }
 
-        foreach (var productGroup in order.Items
-                     .Where(item => item.ProductId.HasValue)
-                     .GroupBy(item => item.ProductId!.Value))
-        {
-            var quantity = productGroup.Sum(item => item.Quantity);
-            await dbContext.Products
-                .Where(product => product.ProductId == productGroup.Key)
-                .ExecuteUpdateAsync(
-                    setters => setters.SetProperty(
-                        product => product.StockQuantity,
-                        product => product.StockQuantity + quantity),
-                    cancellationToken);
-        }
+        await RestoreStockAsync(order.Items, cancellationToken);
 
         await transaction.CommitAsync(cancellationToken);
         return OrderCancellationStatus.Cancelled;
     }
+
+    public async Task<OrderStatusUpdateStatus> UpdateStatusAsync(
+        int orderId,
+        OrderStatus nextStatus,
+        CancellationToken cancellationToken = default)
+    {
+        if (!Enum.IsDefined(typeof(OrderStatus), nextStatus))
+        {
+            return OrderStatusUpdateStatus.InvalidTransition;
+        }
+
+        await using var transaction = await dbContext.Database.BeginTransactionAsync(
+            IsolationLevel.Serializable,
+            cancellationToken);
+
+        var order = await dbContext.Orders
+            .AsNoTracking()
+            .Include(item => item.Items)
+            .SingleOrDefaultAsync(item => item.OrderId == orderId, cancellationToken);
+
+        if (order is null)
+        {
+            return OrderStatusUpdateStatus.NotFound;
+        }
+
+        if (!IsAllowedTransition(order.OrderStatus, nextStatus))
+        {
+            return OrderStatusUpdateStatus.InvalidTransition;
+        }
+
+        var changedOrders = await dbContext.Orders
+            .Where(item => item.OrderId == orderId && item.OrderStatus == order.OrderStatus)
+            .ExecuteUpdateAsync(
+                setters => setters.SetProperty(item => item.OrderStatus, nextStatus),
+                cancellationToken);
+
+        if (changedOrders != 1)
+        {
+            return OrderStatusUpdateStatus.InvalidTransition;
+        }
+
+        if (nextStatus == OrderStatus.Cancelled)
+        {
+            await RestoreStockAsync(order.Items, cancellationToken);
+        }
+
+        await transaction.CommitAsync(cancellationToken);
+        return OrderStatusUpdateStatus.Updated;
+    }
+
+    public static IReadOnlyList<OrderStatus> GetAllowedTransitions(OrderStatus currentStatus) =>
+        currentStatus switch
+        {
+            OrderStatus.Pending => [OrderStatus.Confirmed, OrderStatus.Cancelled],
+            OrderStatus.Confirmed => [OrderStatus.Processing, OrderStatus.Cancelled],
+            OrderStatus.Processing => [OrderStatus.Shipped, OrderStatus.Cancelled],
+            OrderStatus.Shipped => [OrderStatus.Delivered],
+            _ => []
+        };
 
     private static decimal CurrentPrice(Product product) =>
         decimal.Round(
@@ -311,4 +365,26 @@ public sealed class OrderService(ShopSphereDbContext dbContext)
 
     private static bool IsPossibleDuplicateSubmission(DbUpdateException exception) =>
         exception.InnerException is SqlException { Number: 1205 or 2601 or 2627 };
+
+    private async Task RestoreStockAsync(
+        IEnumerable<OrderItem> orderItems,
+        CancellationToken cancellationToken)
+    {
+        foreach (var productGroup in orderItems
+                     .Where(item => item.ProductId.HasValue)
+                     .GroupBy(item => item.ProductId!.Value))
+        {
+            var quantity = productGroup.Sum(item => item.Quantity);
+            await dbContext.Products
+                .Where(product => product.ProductId == productGroup.Key)
+                .ExecuteUpdateAsync(
+                    setters => setters.SetProperty(
+                        product => product.StockQuantity,
+                        product => product.StockQuantity + quantity),
+                    cancellationToken);
+        }
+    }
+
+    private static bool IsAllowedTransition(OrderStatus current, OrderStatus next) =>
+        GetAllowedTransitions(current).Contains(next);
 }

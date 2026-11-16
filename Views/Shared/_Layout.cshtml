@@ -62,7 +62,7 @@
                             }
                             @if (User.IsInRole(ApplicationRoles.Admin))
                             {
-                                <a class="header-action" asp-controller="Admin" asp-action="Index">Admin Dashboard</a>
+                                <a class="header-action" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Admin Dashboard</a>
                             }
                             <form class="logout-form" asp-controller="Account" asp-action="Logout" method="post">
                                 @Html.AntiForgeryToken()

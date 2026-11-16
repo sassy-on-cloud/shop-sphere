@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f85606" />
+    <title>@ViewData["Title"] - ShopSphere Admin</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+</head>
+<body class="admin-body">
+    <header class="admin-topbar">
+        <a class="admin-brand" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+            <span class="admin-brand-mark">S</span>
+            <span>ShopSphere <strong>Admin</strong></span>
+        </a>
+        <div class="admin-topbar-actions">
+            <a asp-area="" asp-controller="Home" asp-action="Index">View storefront</a>
+            <span class="admin-user-label">@User.Identity?.Name</span>
+            <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit">Sign out</button>
+            </form>
+        </div>
+    </header>
+
+    <div class="admin-shell">
+        <aside class="admin-sidebar" aria-label="Admin navigation">
+            <p class="admin-nav-label">Workspace</p>
+            <a class="admin-nav-link" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                <span aria-hidden="true">⌂</span> Dashboard
+            </a>
+            <a class="admin-nav-link" asp-area="Admin" asp-controller="Products" asp-action="Index">
+                <span aria-hidden="true">▦</span> Products
+            </a>
+            <a class="admin-nav-link" asp-area="Admin" asp-controller="Categories" asp-action="Index">
+                <span aria-hidden="true">◈</span> Categories
+            </a>
+            <a class="admin-nav-link" asp-area="Admin" asp-controller="Orders" asp-action="Index">
+                <span aria-hidden="true">▤</span> Orders
+            </a>
+            <a class="admin-nav-link" asp-area="Admin" asp-controller="Customers" asp-action="Index">
+                <span aria-hidden="true">♙</span> Customers
+            </a>
+            <div class="admin-sidebar-footer">
+                <span>Secure admin workspace</span>
+                <span>ShopSphere · Nepal</span>
+            </div>
+        </aside>
+
+        <main class="admin-main" role="main">
+            @if (TempData["AdminMessage"] is string adminMessage)
+            {
+                var messageType = TempData["AdminMessageType"] as string;
+                var alertClass = messageType == "success" ? "alert-success" : messageType == "warning" ? "alert-warning" : "alert-info";
+                <div class="alert @alertClass admin-feedback" role="status" aria-live="polite">@adminMessage</div>
+            }
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

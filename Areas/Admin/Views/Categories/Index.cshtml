@@ -1,0 +1,51 @@
+@model CategoryManagementViewModel
+@{
+    ViewData["Title"] = "Categories";
+}
+<div class="admin-page-heading">
+    <div>
+        <p class="admin-eyebrow">CATALOG</p>
+        <h1>Categories <span class="admin-heading-count">@Model.TotalCategories</span></h1>
+        <p class="admin-page-subtitle">Organize the products in your storefront.</p>
+    </div>
+    <a class="btn admin-primary-button" asp-area="Admin" asp-controller="Categories" asp-action="Create">Add category</a>
+</div>
+<section class="admin-panel">
+    @if (Model.Categories.Count == 0)
+    {
+        <div class="admin-empty-state">
+            <span class="admin-empty-icon" aria-hidden="true">◈</span>
+            <h2>No categories yet</h2>
+            <p>Create a category to organize products.</p>
+            <a class="btn admin-primary-button" asp-area="Admin" asp-controller="Categories" asp-action="Create">Add category</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table admin-table">
+                <thead><tr><th>Category</th><th>Description</th><th>Products</th><th class="text-end">Actions</th></tr></thead>
+                <tbody>
+                @foreach (var category in Model.Categories)
+                {
+                    <tr>
+                        <td>
+                            <div class="admin-product-cell">
+                                <img src="@category.ImageUrl" alt="" loading="lazy" />
+                                <a class="admin-table-primary" asp-area="Admin" asp-controller="Categories" asp-action="Details" asp-route-id="@category.CategoryId">@category.CategoryName</a>
+                            </div>
+                        </td>
+                        <td class="admin-truncate">@category.Description</td>
+                        <td>@category.ProductCount</td>
+                        <td class="text-end admin-row-actions">
+                            <a asp-area="Admin" asp-controller="Categories" asp-action="Edit" asp-route-id="@category.CategoryId">Edit</a>
+                            <a asp-area="Admin" asp-controller="Categories" asp-action="Details" asp-route-id="@category.CategoryId">View</a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        <partial name="_AdminPagination" model="@(new AdminPaginationViewModel(Model.Page, Model.TotalPages))" />
+    }
+</section>

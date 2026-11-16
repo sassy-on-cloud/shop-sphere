@@ -13,7 +13,6 @@
             <div class="profile-success" role="status">@message</div>
         }
         <form asp-action="Profile" method="post">
-            @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
             <div class="auth-field">
                 <label asp-for="FullName"></label>

@@ -9,7 +9,6 @@
         <h1>Create your account</h1>
         <p class="auth-intro">A few details and you’re ready to discover your next favorite.</p>
         <form asp-action="Register" method="post">
-            @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
             <div class="auth-field">
                 <label asp-for="FullName"></label>

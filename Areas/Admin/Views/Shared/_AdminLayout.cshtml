@@ -19,7 +19,6 @@
             <a asp-area="" asp-controller="Home" asp-action="Index">View storefront</a>
             <span class="admin-user-label">@User.Identity?.Name</span>
             <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
-                @Html.AntiForgeryToken()
                 <button type="submit">Sign out</button>
             </form>
         </div>

@@ -37,7 +37,7 @@ public sealed class ShoppingCartService(ShopSphereDbContext dbContext)
             .OrderBy(item => item.AddedAt)
             .Select(item =>
             {
-                var price = CurrentPrice(item.Product);
+                var price = ProductPricing.CalculateCurrentPrice(item.Product);
                 return new CartItemViewModel(
                     item.CartItemId,
                     item.ProductId,
@@ -325,9 +325,4 @@ public sealed class ShoppingCartService(ShopSphereDbContext dbContext)
             : new Cart { GuestCartKey = GuestCartCookie.HashToken(guestToken) };
     }
 
-    private static decimal CurrentPrice(Product product) =>
-        decimal.Round(
-            product.Price * (100m - product.DiscountPercentage) / 100m,
-            2,
-            MidpointRounding.AwayFromZero);
 }

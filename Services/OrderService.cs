@@ -89,7 +89,7 @@ public sealed class OrderService(ShopSphereDbContext dbContext)
                         Message: $"Only {cartItem.Product.StockQuantity} item(s) of {cartItem.Product.ProductName} are currently available.");
                 }
 
-                var unitPrice = CurrentPrice(cartItem.Product);
+                var unitPrice = ProductPricing.CalculateCurrentPrice(cartItem.Product);
                 var subtotal = decimal.Round(
                     unitPrice * cartItem.Quantity,
                     2,
@@ -353,12 +353,6 @@ public sealed class OrderService(ShopSphereDbContext dbContext)
             OrderStatus.Shipped => [OrderStatus.Delivered],
             _ => []
         };
-
-    private static decimal CurrentPrice(Product product) =>
-        decimal.Round(
-            product.Price * (100m - product.DiscountPercentage) / 100m,
-            2,
-            MidpointRounding.AwayFromZero);
 
     private static string CreateOrderNumber() =>
         $"SS-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString("N")[..12].ToUpperInvariant()}";

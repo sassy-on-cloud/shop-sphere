@@ -8,15 +8,20 @@
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/ShopSphere.styles.css" asp-append-version="true" />
 </head>
 <body>
     <div class="topbar">
         <div class="container topbar-inner">
             <span>Thoughtful finds. Delivered across Nepal.</span>
             <div class="topbar-links">
-                <a asp-controller="Home" asp-action="Privacy">Help &amp; Support</a>
-                <a asp-controller="Home" asp-action="Privacy">Track your order</a>
+                @if (User.IsInRole(ApplicationRoles.Customer))
+                {
+                    <a asp-controller="Orders" asp-action="Index">Track your order</a>
+                }
+                else if (User.Identity?.IsAuthenticated != true)
+                {
+                    <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="/Orders">Track your order</a>
+                }
             </div>
         </div>
     </div>
@@ -65,7 +70,6 @@
                                 <a class="header-action" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Admin Dashboard</a>
                             }
                             <form class="logout-form" asp-controller="Account" asp-action="Logout" method="post">
-                                @Html.AntiForgeryToken()
                                 <button class="header-action logout-button" type="submit">Logout</button>
                             </form>
                         }
@@ -87,15 +91,7 @@
             </nav>
         </div>
         <nav class="category-nav" aria-label="Shop by category">
-            <div class="container category-nav-inner">
-                <a class="category-nav-link active" asp-controller="Home" asp-action="Index">Discover</a>
-                <a class="category-nav-link" asp-controller="Product" asp-action="Index" asp-route-sort="price-asc">Best value</a>
-                <a class="category-nav-link" asp-controller="Product" asp-action="Categories">All categories</a>
-                <a class="category-nav-link" asp-controller="Product" asp-action="Index" asp-route-categoryId="1">Electronics</a>
-                <a class="category-nav-link" asp-controller="Product" asp-action="Index" asp-route-categoryId="2">Fashion</a>
-                <a class="category-nav-link" asp-controller="Product" asp-action="Index" asp-route-categoryId="3">Home &amp; living</a>
-                <a class="category-nav-link" asp-controller="Product" asp-action="Index" asp-route-categoryId="4">Beauty</a>
-            </div>
+            @await Component.InvokeAsync("CategoryNavigation")
         </nav>
     </header>
 
@@ -129,45 +125,38 @@
                         <span class="brand-name">Shop<span>Sphere</span></span>
                     </a>
                     <p>Your everyday marketplace for little discoveries and big ideas.</p>
-                    <div class="footer-socials" aria-label="Follow ShopSphere">
-                        <a href="#" aria-label="Instagram">ig</a>
-                        <a href="#" aria-label="Facebook">f</a>
-                        <a href="#" aria-label="TikTok">♪</a>
-                    </div>
                 </div>
                 <div class="footer-column">
                     <h2>Shop with us</h2>
                     <a asp-controller="Product" asp-action="Categories">All categories</a>
-                    <a asp-controller="Product" asp-action="Index" asp-route-sort="price-desc">Best deals</a>
+                    <a asp-controller="Product" asp-action="Index" asp-route-sort="price-asc">Best deals</a>
                     <a asp-controller="Product" asp-action="Index">Shop all products</a>
                 </div>
                 <div class="footer-column">
                     <h2>Customer care</h2>
-                    <a asp-controller="Home" asp-action="Privacy">Help center</a>
-                    <a asp-controller="Home" asp-action="Privacy">Delivery information</a>
-                    <a asp-controller="Home" asp-action="Privacy">Returns &amp; refunds</a>
+                    @if (User.IsInRole(ApplicationRoles.Customer))
+                    {
+                        <a asp-controller="Orders" asp-action="Index">My orders</a>
+                    }
+                    else if (User.Identity?.IsAuthenticated != true)
+                    {
+                        <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="/Orders">My orders</a>
+                    }
                 </div>
                 <div class="footer-column footer-newsletter">
-                    <h2>Get the good stuff</h2>
-                    <p>Fresh finds and offers, straight to your inbox.</p>
-                    <form action="#" method="get">
-                        <label class="visually-hidden" for="newsletterEmail">Email address</label>
-                        <input id="newsletterEmail" type="email" placeholder="Your email address" />
-                        <button type="submit" aria-label="Subscribe">→</button>
-                    </form>
+                    <h2>Everyday discoveries</h2>
+                    <p>Thoughtful finds and useful everyday picks, delivered across Nepal.</p>
                 </div>
             </div>
             <div class="footer-bottom">
                 <span>&copy; @DateTime.Now.Year ShopSphere. Made for everyday discovery.</span>
                 <span>Prices shown in Nepalese rupees (NPR)</span>
-                <a asp-controller="Home" asp-action="Privacy">Privacy</a>
             </div>
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

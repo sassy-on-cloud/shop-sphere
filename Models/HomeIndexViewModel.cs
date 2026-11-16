@@ -7,4 +7,6 @@ public sealed class HomeIndexViewModel
     public required IReadOnlyList<ProductCardViewModel> FlashDeals { get; init; }
 
     public required IReadOnlyList<ProductCardViewModel> FeaturedProducts { get; init; }
+
+    public decimal MaximumDiscountPercentage { get; init; }
 }

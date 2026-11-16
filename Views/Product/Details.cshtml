@@ -19,10 +19,10 @@
             </a>
             <h1>@Model.Product.ProductName</h1>
             <div class="product-details-price">
-                <strong>NPR @Model.CurrentPrice.ToString("N0")</strong>
-                <del>NPR @Model.Product.Price.ToString("N0")</del>
+                <strong>NPR @Model.CurrentPrice.ToString("N2")</strong>
                 @if (Model.Product.DiscountPercentage > 0)
                 {
+                    <del>NPR @Model.Product.Price.ToString("N2")</del>
                     <span>@Model.Product.DiscountPercentage.ToString("0.#")% off</span>
                 }
             </div>
@@ -40,7 +40,6 @@
             @if (Model.Product.StockQuantity > 0)
             {
                 <form class="product-details-cart-form" asp-controller="Cart" asp-action="Add" method="post">
-                    @Html.AntiForgeryToken()
                     <input type="hidden" name="ProductId" value="@Model.Product.ProductId" />
                     <input type="hidden" name="returnUrl" value="@(Context.Request.Path.ToString() + Context.Request.QueryString.ToString())" />
                     <label for="productQuantity">Quantity</label>

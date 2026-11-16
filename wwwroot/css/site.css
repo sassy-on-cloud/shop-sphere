@@ -624,29 +624,16 @@ a:hover {
   font-size: 25px;
 }
 
-.deal-timer {
-  display: flex;
+.deal-live-label {
+  display: inline-flex;
   align-items: center;
-  gap: 7px;
-  color: #555b64;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.deal-timer > span {
-  margin-right: 3px;
-}
-
-.timer-unit {
-  display: grid;
-  min-width: 34px;
-  min-height: 34px;
-  place-items: center;
-  border-radius: 5px;
-  color: #fff;
-  background: #292b31;
-  font-variant-numeric: tabular-nums;
+  padding: 7px 10px;
+  border-radius: 999px;
+  color: #b34209;
+  background: #fff4ec;
+  font-size: 11px;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .product-grid {
@@ -879,29 +866,6 @@ a:hover {
   line-height: 1.7;
 }
 
-.footer-socials {
-  display: flex;
-  gap: 9px;
-}
-
-.footer-socials a {
-  display: grid;
-  width: 31px;
-  height: 31px;
-  place-items: center;
-  border: 1px solid #454951;
-  border-radius: 50%;
-  color: #e7e8eb;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.footer-socials a:hover {
-  border-color: var(--shop-orange);
-  color: #fff;
-  background: var(--shop-orange);
-}
-
 .footer-column {
   display: flex;
   flex-direction: column;
@@ -930,40 +894,6 @@ a:hover {
   margin: -4px 0 5px;
 }
 
-.footer-newsletter form {
-  display: flex;
-  width: 100%;
-  height: 41px;
-  border: 1px solid #444850;
-  border-radius: 6px;
-}
-
-.footer-newsletter input {
-  width: 100%;
-  min-width: 0;
-  padding: 0 11px;
-  border: 0;
-  border-radius: 6px 0 0 6px;
-  outline: 0;
-  color: #fff;
-  background: transparent;
-  font-size: 11px;
-}
-
-.footer-newsletter input::placeholder {
-  color: #9da2aa;
-}
-
-.footer-newsletter button {
-  width: 43px;
-  flex: 0 0 43px;
-  border: 0;
-  border-radius: 0 5px 5px 0;
-  color: #fff;
-  background: var(--shop-orange);
-  font-size: 19px;
-}
-
 .footer-bottom {
   display: flex;
   min-height: 48px;
@@ -973,10 +903,6 @@ a:hover {
   border-top: 1px solid #3a3e45;
   color: #9fa4ac;
   font-size: 11px;
-}
-
-.footer-bottom a {
-  color: #c6c9ce;
 }
 
 .product-details-page {
@@ -1821,16 +1747,6 @@ a:hover {
   .deal-heading {
     position: relative;
     padding-bottom: 48px;
-  }
-
-  .deal-timer {
-    gap: 5px;
-    font-size: 11px;
-  }
-
-  .timer-unit {
-    min-width: 30px;
-    min-height: 30px;
   }
 
   .product-grid {

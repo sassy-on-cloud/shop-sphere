@@ -62,7 +62,6 @@
             @if (Model.CanCancel)
             {
                 <form asp-action="Cancel" asp-route-id="@Model.OrderId" method="post">
-                    @Html.AntiForgeryToken()
                     <button class="order-cancel-button" type="submit">Cancel order</button>
                 </form>
             }

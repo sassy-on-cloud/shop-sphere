@@ -12,7 +12,6 @@
         @if (Model.Items.Count > 0)
         {
             <form asp-action="Clear" method="post">
-                @Html.AntiForgeryToken()
                 <button class="cart-clear-button" type="submit">Clear bag</button>
             </form>
         }
@@ -54,14 +53,12 @@
                             }
                             <div class="cart-item-controls">
                                 <form asp-action="ChangeQuantity" method="post" class="quantity-control">
-                                    @Html.AntiForgeryToken()
                                     <input type="hidden" name="cartItemId" value="@item.CartItemId" />
                                     <button type="submit" name="delta" value="-1" aria-label="Decrease quantity">−</button>
                                     <span aria-live="polite">@item.Quantity</span>
                                     <button type="submit" name="delta" value="1" aria-label="Increase quantity" disabled="@(item.Quantity >= item.StockQuantity)">+</button>
                                 </form>
                                 <form asp-action="Remove" method="post">
-                                    @Html.AntiForgeryToken()
                                     <input type="hidden" name="cartItemId" value="@item.CartItemId" />
                                     <button class="cart-remove-button" type="submit">Remove</button>
                                 </form>

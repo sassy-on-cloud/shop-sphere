@@ -1,7 +1,7 @@
 @model Product
 @{
     ViewData["Title"] = "Product details";
-    var discountedPrice = decimal.Round(Model.Price * (100m - Model.DiscountPercentage) / 100m, 2, MidpointRounding.AwayFromZero);
+    var discountedPrice = ProductPricing.CalculateCurrentPrice(Model.Price, Model.DiscountPercentage);
 }
 <div class="admin-page-heading">
     <div>

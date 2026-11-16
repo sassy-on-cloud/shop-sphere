@@ -103,22 +103,22 @@ public class ProductController(ShopSphereDbContext dbContext) : Controller
         if (minimumPrice.HasValue)
         {
             productsQuery = productsQuery.Where(product =>
-                product.Price * (100m - product.DiscountPercentage) / 100m >= minimumPrice.Value);
+                Math.Round(product.Price * (100m - product.DiscountPercentage) / 100m, 2) >= minimumPrice.Value);
         }
 
         if (maximumPrice.HasValue)
         {
             productsQuery = productsQuery.Where(product =>
-                product.Price * (100m - product.DiscountPercentage) / 100m <= maximumPrice.Value);
+                Math.Round(product.Price * (100m - product.DiscountPercentage) / 100m, 2) <= maximumPrice.Value);
         }
 
         productsQuery = sort switch
         {
             "price-asc" => productsQuery
-                .OrderBy(product => product.Price * (100m - product.DiscountPercentage) / 100m)
+                .OrderBy(product => Math.Round(product.Price * (100m - product.DiscountPercentage) / 100m, 2))
                 .ThenBy(product => product.ProductId),
             "price-desc" => productsQuery
-                .OrderByDescending(product => product.Price * (100m - product.DiscountPercentage) / 100m)
+                .OrderByDescending(product => Math.Round(product.Price * (100m - product.DiscountPercentage) / 100m, 2))
                 .ThenBy(product => product.ProductId),
             "name" => productsQuery
                 .OrderBy(product => product.ProductName)
@@ -197,10 +197,7 @@ public class ProductController(ShopSphereDbContext dbContext) : Controller
             .Take(4)
             .ToListAsync(cancellationToken);
 
-        var currentPrice = decimal.Round(
-            product.Price * (100m - product.DiscountPercentage) / 100m,
-            2,
-            MidpointRounding.AwayFromZero);
+        var currentPrice = ProductPricing.CalculateCurrentPrice(product);
 
         return View(new ProductDetailsViewModel(
             product,

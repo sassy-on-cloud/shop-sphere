@@ -13,16 +13,11 @@ public sealed record ProductCardViewModel(
 {
     public static ProductCardViewModel FromProduct(Product product, string badge)
     {
-        var discountedPrice = decimal.Round(
-            product.Price * (100m - product.DiscountPercentage) / 100m,
-            2,
-            MidpointRounding.AwayFromZero);
-
         return new ProductCardViewModel(
             product.ProductId,
             product.ProductName,
             product.ImageUrl,
-            discountedPrice,
+            ProductPricing.CalculateCurrentPrice(product),
             product.Price,
             product.DiscountPercentage,
             product.Category.CategoryName,

@@ -21,7 +21,6 @@
 
     <div class="checkout-layout">
         <form class="checkout-form" asp-action="Checkout" method="post">
-            @Html.AntiForgeryToken()
             <input asp-for="Input.SubmissionToken" type="hidden" />
             <div asp-validation-summary="All" class="validation-summary"></div>
             <section class="checkout-form-section" aria-labelledby="deliveryHeading">

@@ -3,17 +3,20 @@
 <article class="product-card h-100">
     <a class="product-image-wrap" asp-controller="Product" asp-action="Details" asp-route-id="@Model.ProductId" aria-label="View @Model.Name">
         <img class="product-image" src="@Model.ImageUrl" alt="@Model.Name" loading="lazy" />
-        <span class="product-badge">@Model.DiscountPercent.ToString("0.#")% OFF</span>
+        @if (Model.DiscountPercent > 0)
+        {
+            <span class="product-badge">@Model.DiscountPercent.ToString("0.#")% OFF</span>
+        }
     </a>
     <div class="product-info">
         <h3 class="product-name">
             <a asp-controller="Product" asp-action="Details" asp-route-id="@Model.ProductId">@Model.Name</a>
         </h3>
         <div class="product-price">
-            <strong>NPR @Model.Price.ToString("N0")</strong>
+            <strong>NPR @Model.Price.ToString("N2")</strong>
             @if (Model.DiscountPercent > 0)
             {
-                <del>NPR @Model.OriginalPrice.ToString("N0")</del>
+                <del>NPR @Model.OriginalPrice.ToString("N2")</del>
             }
         </div>
         <div class="product-meta">
@@ -25,7 +28,6 @@
             <span>@(Model.StockQuantity > 0 ? $"{Model.StockQuantity} available" : "Out of stock")</span>
         </div>
         <form class="product-card-cart-form" asp-controller="Cart" asp-action="Add" method="post">
-            @Html.AntiForgeryToken()
             <input type="hidden" name="ProductId" value="@Model.ProductId" />
             <input type="hidden" name="Quantity" value="1" />
             <input type="hidden" name="returnUrl" value="@(Context.Request.Path.ToString() + Context.Request.QueryString.ToString())" />

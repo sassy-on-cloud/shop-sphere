@@ -10,6 +10,12 @@ public class HomeController(ShopSphereDbContext dbContext) : Controller
 {
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
+        var maximumDiscountPercentage = await dbContext.Products
+            .AsNoTracking()
+            .Where(product => product.StockQuantity > 0)
+            .Select(product => (decimal?)product.DiscountPercentage)
+            .MaxAsync(cancellationToken) ?? 0m;
+
         var categories = await dbContext.Categories
             .AsNoTracking()
             .OrderBy(category => category.CategoryName)
@@ -40,7 +46,8 @@ public class HomeController(ShopSphereDbContext dbContext) : Controller
                 .ToList(),
             FeaturedProducts = featuredProducts
                 .Select(product => ProductCardViewModel.FromProduct(product, "Popular pick"))
-                .ToList()
+                .ToList(),
+            MaximumDiscountPercentage = maximumDiscountPercentage
         };
 
         return View(viewModel);

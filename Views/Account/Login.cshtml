@@ -9,7 +9,6 @@
         <h1>Log in to ShopSphere</h1>
         <p class="auth-intro">Sign in to manage your account and keep discovering.</p>
         <form asp-action="Login" method="post">
-            @Html.AntiForgeryToken()
             <input asp-for="ReturnUrl" type="hidden" />
             <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
             <div class="auth-field">

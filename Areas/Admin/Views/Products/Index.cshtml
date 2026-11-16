@@ -51,7 +51,7 @@
                 <tbody>
                 @foreach (var product in Model.Products)
                 {
-                    var discountedPrice = decimal.Round(product.Price * (100m - product.DiscountPercentage) / 100m, 2, MidpointRounding.AwayFromZero);
+                    var discountedPrice = ProductPricing.CalculateCurrentPrice(product.Price, product.DiscountPercentage);
                     <tr>
                         <td>
                             <div class="admin-product-cell">

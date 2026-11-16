@@ -1,0 +1,19 @@
+@model IReadOnlyList<CategoryNavigationItemViewModel>
+@{
+    var isHome = ViewContext.RouteData.Values["controller"]?.ToString() == "Home";
+    var selectedCategoryId = Context.Request.Query["categoryId"].ToString();
+}
+<div class="container category-nav-inner">
+    <a class="category-nav-link @(isHome ? "active" : "")"
+       asp-controller="Home" asp-action="Index"
+       aria-current="@(isHome ? "page" : null)">Discover</a>
+    <a class="category-nav-link" asp-controller="Product" asp-action="Index" asp-route-sort="price-asc">Best value</a>
+    <a class="category-nav-link" asp-controller="Product" asp-action="Categories">All categories</a>
+    @foreach (var category in Model)
+    {
+        var isSelected = selectedCategoryId == category.CategoryId.ToString();
+        <a class="category-nav-link @(isSelected ? "active" : "")"
+           asp-controller="Product" asp-action="Index" asp-route-categoryId="@category.CategoryId"
+           aria-current="@(isSelected ? "page" : null)">@category.CategoryName</a>
+    }
+</div>

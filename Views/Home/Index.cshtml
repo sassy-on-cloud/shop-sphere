@@ -15,10 +15,13 @@
                     <p>Good things, great prices, and a whole lot of inspiration - all in one place.</p>
                     <a class="hero-cta" href="#featured">Explore the collection <span aria-hidden="true">→</span></a>
                 </div>
-                <div class="hero-discount" aria-label="Up to 50 percent off">
-                    <strong>50%</strong>
-                    <span>up to off</span>
-                </div>
+                @if (Model.MaximumDiscountPercentage > 0)
+                {
+                    <div class="hero-discount" aria-label="Up to @Model.MaximumDiscountPercentage percent off">
+                        <strong>@Model.MaximumDiscountPercentage.ToString("0.#")%</strong>
+                        <span>up to off</span>
+                    </div>
+                }
             </div>
 
             <div class="service-highlights" aria-label="ShopSphere benefits">
@@ -71,13 +74,8 @@
                         <h2>Flash deals</h2>
                     </div>
                 </div>
-                <div class="deal-timer" data-countdown aria-label="Flash deals time remaining">
-                    <span>Ends in</span>
-                    <span class="timer-unit" data-hours>03</span><span>:</span>
-                    <span class="timer-unit" data-minutes>42</span><span>:</span>
-                    <span class="timer-unit" data-seconds>18</span>
-                </div>
-                <a class="text-link" asp-controller="Product" asp-action="Index" asp-route-sort="price-desc">See all deals <span aria-hidden="true">→</span></a>
+                <span class="deal-live-label">Available while in stock</span>
+                <a class="text-link" asp-controller="Product" asp-action="Index" asp-route-sort="price-asc">See all deals <span aria-hidden="true">→</span></a>
             </div>
             <div class="product-grid">
                 @foreach (var product in Model.FlashDeals)

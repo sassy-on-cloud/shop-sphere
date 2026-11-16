@@ -1,0 +1,38 @@
+﻿@model ShopSphere.Models.ProductCategoriesViewModel
+@{
+    ViewData["Title"] = "Shop by category";
+}
+
+<section class="container catalog-page categories-page">
+    <div class="catalog-heading">
+        <div>
+            <p class="section-kicker">Browse your way</p>
+            <h1>Shop by category</h1>
+            <p class="catalog-subtitle">Explore all of ShopSphere’s collections.</p>
+        </div>
+        <a class="text-link" asp-action="Index">Shop all products <span aria-hidden="true">→</span></a>
+    </div>
+    @if (Model.Categories.Count == 0)
+    {
+        <div class="catalog-empty">
+            <h2>No categories yet</h2>
+            <p>Check back soon for new collections.</p>
+        </div>
+    }
+    else
+    {
+        <div class="browse-category-grid">
+            @foreach (var category in Model.Categories)
+            {
+                <a class="browse-category-card" asp-action="Index" asp-route-categoryId="@category.CategoryId">
+                    <img src="@category.ImageUrl" alt="" loading="lazy" />
+                    <span class="browse-category-copy">
+                        <strong>@category.CategoryName</strong>
+                        <span>@category.Description</span>
+                        <span class="text-link">Explore category <span aria-hidden="true">→</span></span>
+                    </span>
+                </a>
+            }
+        </div>
+    }
+</section>

@@ -11,14 +11,18 @@
         </h3>
         <div class="product-price">
             <strong>NPR @Model.Price.ToString("N0")</strong>
-            <del>NPR @Model.OriginalPrice.ToString("N0")</del>
+            @if (Model.DiscountPercent > 0)
+            {
+                <del>NPR @Model.OriginalPrice.ToString("N0")</del>
+            }
         </div>
         <div class="product-meta">
             <span>@Model.CategoryName</span>
+            <span class="product-rating-placeholder" aria-label="Rating not available">☆ New</span>
         </div>
-        <div class="stock-label">
+        <div class="stock-label @(Model.StockQuantity > 0 ? "in-stock" : "out-of-stock")">
             <span>@Model.Badge</span>
-            <span>@Model.StockQuantity available</span>
+            <span>@(Model.StockQuantity > 0 ? $"{Model.StockQuantity} available" : "Out of stock")</span>
         </div>
     </div>
 </article>

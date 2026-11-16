@@ -4,7 +4,7 @@
 }
 
 <section class="container product-details-page">
-    <a class="product-back-link" asp-controller="Home" asp-action="Index">← Back to discovering</a>
+    <a class="product-back-link" asp-controller="Product" asp-action="Index">← Back to products</a>
     <div class="product-details-card">
         <div class="product-details-image">
             <img src="@Model.Product.ImageUrl" alt="@Model.Product.ProductName" />
@@ -14,15 +14,15 @@
             }
         </div>
         <div class="product-details-copy">
-            <a class="product-details-category" asp-controller="Home" asp-action="Index" asp-fragment="categories">
+            <a class="product-details-category" asp-controller="Product" asp-action="Index" asp-route-categoryId="@Model.Product.CategoryId">
                 @Model.Product.Category.CategoryName
             </a>
             <h1>@Model.Product.ProductName</h1>
             <div class="product-details-price">
                 <strong>NPR @Model.CurrentPrice.ToString("N0")</strong>
+                <del>NPR @Model.Product.Price.ToString("N0")</del>
                 @if (Model.Product.DiscountPercentage > 0)
                 {
-                    <del>NPR @Model.Product.Price.ToString("N0")</del>
                     <span>@Model.Product.DiscountPercentage.ToString("0.#")% off</span>
                 }
             </div>
@@ -44,4 +44,25 @@
             <div class="product-details-note">Prices are shown in Nepalese rupees (NPR).</div>
         </div>
     </div>
+
+    @if (Model.RelatedProducts.Count > 0)
+    {
+        <section class="related-products-section" aria-labelledby="relatedProductsHeading">
+            <div class="section-heading">
+                <div>
+                    <p class="section-kicker">More from @Model.Product.Category.CategoryName</p>
+                    <h2 id="relatedProductsHeading">You might also like</h2>
+                </div>
+                <a class="text-link" asp-controller="Product" asp-action="Index" asp-route-categoryId="@Model.Product.CategoryId">
+                    Shop this category <span aria-hidden="true">→</span>
+                </a>
+            </div>
+            <div class="product-grid">
+                @foreach (var product in Model.RelatedProducts)
+                {
+                    <partial name="_ProductCard" model="product" />
+                }
+            </div>
+        </section>
+    }
 </section>

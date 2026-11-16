@@ -41,9 +41,9 @@
                 </button>
 
                 <div class="collapse navbar-collapse" id="storeNavigation">
-                    <form class="store-search mx-lg-auto" role="search" action="#" method="get">
+                    <form class="store-search mx-lg-auto" role="search" asp-controller="Product" asp-action="Index" method="get">
                         <label class="visually-hidden" for="storeSearch">Search ShopSphere</label>
-                        <input id="storeSearch" class="form-control" type="search" placeholder="Search for products, brands and more..." />
+                        <input id="storeSearch" class="form-control" type="search" name="q" placeholder="Search for products, brands and more..." />
                         <button type="submit" aria-label="Search">
                             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8" /><path d="m16 16 5 5" /></svg>
                         </button>
@@ -86,12 +86,12 @@
         <nav class="category-nav" aria-label="Shop by category">
             <div class="container category-nav-inner">
                 <a class="category-nav-link active" asp-controller="Home" asp-action="Index">Discover</a>
-                <a class="category-nav-link" asp-controller="Home" asp-action="Index" asp-fragment="flash-deals">Flash deals</a>
-                <a class="category-nav-link" asp-controller="Home" asp-action="Index" asp-fragment="categories">Fashion</a>
-                <a class="category-nav-link" asp-controller="Home" asp-action="Index" asp-fragment="categories">Electronics</a>
-                <a class="category-nav-link" asp-controller="Home" asp-action="Index" asp-fragment="categories">Home &amp; living</a>
-                <a class="category-nav-link" asp-controller="Home" asp-action="Index" asp-fragment="categories">Beauty</a>
-                <a class="category-nav-link" asp-controller="Home" asp-action="Index" asp-fragment="featured">More to explore <span aria-hidden="true">⌄</span></a>
+                <a class="category-nav-link" asp-controller="Product" asp-action="Index" asp-route-sort="price-asc">Best value</a>
+                <a class="category-nav-link" asp-controller="Product" asp-action="Categories">All categories</a>
+                <a class="category-nav-link" asp-controller="Product" asp-action="Index" asp-route-categoryId="1">Electronics</a>
+                <a class="category-nav-link" asp-controller="Product" asp-action="Index" asp-route-categoryId="2">Fashion</a>
+                <a class="category-nav-link" asp-controller="Product" asp-action="Index" asp-route-categoryId="3">Home &amp; living</a>
+                <a class="category-nav-link" asp-controller="Product" asp-action="Index" asp-route-categoryId="4">Beauty</a>
             </div>
         </nav>
     </header>
@@ -124,9 +124,9 @@
                 </div>
                 <div class="footer-column">
                     <h2>Shop with us</h2>
-                    <a asp-controller="Home" asp-action="Index" asp-fragment="categories">All categories</a>
-                    <a asp-controller="Home" asp-action="Index" asp-fragment="flash-deals">Flash deals</a>
-                    <a asp-controller="Home" asp-action="Index" asp-fragment="featured">Featured finds</a>
+                    <a asp-controller="Product" asp-action="Categories">All categories</a>
+                    <a asp-controller="Product" asp-action="Index" asp-route-sort="price-desc">Best deals</a>
+                    <a asp-controller="Product" asp-action="Index">Shop all products</a>
                 </div>
                 <div class="footer-column">
                     <h2>Customer care</h2>

@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using ShopSphere.Models;
 
 namespace ShopSphere.Data;
 
-public sealed class ShopSphereDbContext(DbContextOptions<ShopSphereDbContext> options) : DbContext(options)
+public sealed class ShopSphereDbContext(DbContextOptions<ShopSphereDbContext> options)
+    : IdentityDbContext<ApplicationUser>(options)
 {
     public DbSet<Category> Categories => Set<Category>();
 
@@ -12,6 +14,12 @@ public sealed class ShopSphereDbContext(DbContextOptions<ShopSphereDbContext> op
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<ApplicationUser>(entity =>
+        {
+            entity.Property(user => user.FullName).HasMaxLength(120).IsRequired();
+            entity.Property(user => user.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+        });
 
         modelBuilder.Entity<Category>(entity =>
         {

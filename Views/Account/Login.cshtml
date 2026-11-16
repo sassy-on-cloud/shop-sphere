@@ -1,0 +1,37 @@
+﻿@model LoginViewModel
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<section class="container auth-page">
+    <div class="auth-card">
+        <p class="section-kicker">Welcome back</p>
+        <h1>Log in to ShopSphere</h1>
+        <p class="auth-intro">Sign in to manage your account and keep discovering.</p>
+        <form asp-action="Login" method="post">
+            @Html.AntiForgeryToken()
+            <input asp-for="ReturnUrl" type="hidden" />
+            <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+            <div class="auth-field">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" autocomplete="username" />
+                <span asp-validation-for="Email" class="field-validation"></span>
+            </div>
+            <div class="auth-field">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" class="form-control" autocomplete="current-password" />
+                <span asp-validation-for="Password" class="field-validation"></span>
+            </div>
+            <div class="remember-row">
+                <input asp-for="RememberMe" />
+                <label asp-for="RememberMe"></label>
+            </div>
+            <button class="auth-submit" type="submit">Log in</button>
+        </form>
+        <p class="auth-switch">New to ShopSphere? <a asp-action="Register">Create an account</a></p>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

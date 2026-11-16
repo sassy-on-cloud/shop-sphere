@@ -1,0 +1,43 @@
+﻿@model ProfileViewModel
+@{
+    ViewData["Title"] = "Your account";
+}
+
+<section class="container auth-page">
+    <div class="auth-card profile-card">
+        <p class="section-kicker">Your ShopSphere</p>
+        <h1>Account details</h1>
+        <p class="auth-intro">Keep your contact details up to date.</p>
+        @if (TempData["ProfileMessage"] is string message)
+        {
+            <div class="profile-success" role="status">@message</div>
+        }
+        <form asp-action="Profile" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+            <div class="auth-field">
+                <label asp-for="FullName"></label>
+                <input asp-for="FullName" class="form-control" autocomplete="name" />
+                <span asp-validation-for="FullName" class="field-validation"></span>
+            </div>
+            <div class="auth-field">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" readonly />
+            </div>
+            <div class="auth-field">
+                <label asp-for="PhoneNumber"></label>
+                <input asp-for="PhoneNumber" class="form-control" autocomplete="tel" />
+                <span asp-validation-for="PhoneNumber" class="field-validation"></span>
+            </div>
+            <div class="auth-field">
+                <label asp-for="CreatedAt"></label>
+                <input class="form-control" value="@Model.CreatedAt.ToLocalTime().ToString("f")" readonly />
+            </div>
+            <button class="auth-submit" type="submit">Save changes</button>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

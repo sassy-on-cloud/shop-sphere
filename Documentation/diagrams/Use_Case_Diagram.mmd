@@ -1,0 +1,45 @@
+flowchart LR
+    Customer([Customer])
+    Admin([Administrator])
+
+    subgraph ShopSphere["ShopSphere e-commerce application"]
+        UC1((Register customer account))
+        UC2((Sign in and sign out))
+        UC3((Update own profile))
+        UC4((Browse and search products))
+        UC5((Filter and sort catalog))
+        UC6((View product details))
+        UC7((Manage cart))
+        UC8((Merge guest cart after sign in))
+        UC9((Place COD order))
+        UC10((View own orders))
+        UC11((Cancel eligible pending order))
+        UA1((View dashboard))
+        UA2((Manage products and stock))
+        UA3((Manage categories))
+        UA4((Review and update orders))
+        UA5((View customers and their order history))
+        note1["Checkout and customer order history require an authenticated Customer role.<br/>Admin actions require the Admin role.<br/>Payment is Cash on Delivery; no gateway is present."]
+    end
+
+    Customer --> UC1
+    Customer --> UC2
+    Customer --> UC3
+    Customer --> UC4
+    Customer --> UC5
+    Customer --> UC6
+    Customer --> UC7
+    UC2 -.-> UC8
+    Customer --> UC9
+    Customer --> UC10
+    Customer --> UC11
+
+    Admin --> UC2
+    Admin --> UA1
+    Admin --> UA2
+    Admin --> UA3
+    Admin --> UA4
+    Admin --> UA5
+
+    UC9 -.-> note1
+    UA1 -.-> note1

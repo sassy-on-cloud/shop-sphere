@@ -1,0 +1,140 @@
+erDiagram
+    AspNetUsers {
+        string Id PK
+        string UserName
+        string NormalizedUserName
+        string Email
+        string NormalizedEmail
+        bool EmailConfirmed
+        string PasswordHash
+        string SecurityStamp
+        string ConcurrencyStamp
+        string PhoneNumber
+        bool PhoneNumberConfirmed
+        bool TwoFactorEnabled
+        datetimeoffset LockoutEnd
+        bool LockoutEnabled
+        int AccessFailedCount
+        string FullName
+        datetime CreatedAt
+    }
+
+    AspNetRoles {
+        string Id PK
+        string Name
+        string NormalizedName
+        string ConcurrencyStamp
+    }
+
+    AspNetRoleClaims {
+        int Id PK
+        string RoleId FK
+        string ClaimType
+        string ClaimValue
+    }
+
+    AspNetUserClaims {
+        int Id PK
+        string UserId FK
+        string ClaimType
+        string ClaimValue
+    }
+
+    AspNetUserLogins {
+        string LoginProvider PK
+        string ProviderKey PK
+        string ProviderDisplayName
+        string UserId FK
+    }
+
+    AspNetUserRoles {
+        string UserId PK
+        string RoleId PK
+    }
+
+    AspNetUserTokens {
+        string UserId PK
+        string LoginProvider PK
+        string Name PK
+        string Value
+    }
+
+    Categories {
+        int CategoryId PK
+        string CategoryName
+        string Description
+        string ImageUrl
+    }
+
+    Products {
+        int ProductId PK
+        string ProductName
+        string Description
+        decimal Price
+        decimal DiscountPercentage
+        int StockQuantity
+        string ImageUrl
+        int CategoryId FK
+        datetime CreatedAt
+    }
+
+    Carts {
+        int CartId PK
+        string UserId FK
+        string GuestCartKey
+        datetime CreatedAt
+        datetime UpdatedAt
+    }
+
+    CartItems {
+        int CartItemId PK
+        int CartId FK
+        int ProductId FK
+        int Quantity
+        datetime AddedAt
+    }
+
+    Orders {
+        int OrderId PK
+        string OrderNumber
+        string UserId FK
+        datetime OrderDate
+        decimal TotalAmount
+        string CustomerName
+        string PhoneNumber
+        string Province
+        string District
+        string City
+        string StreetAddress
+        string DeliveryInstructions
+        string PaymentMethod
+        string PaymentStatus
+        string OrderStatus
+        guid SubmissionToken
+    }
+
+    OrderItems {
+        int OrderItemId PK
+        int OrderId FK
+        int ProductId FK
+        string ProductName
+        string ProductImageUrl
+        int Quantity
+        decimal UnitPrice
+        decimal Subtotal
+    }
+
+    AspNetRoles ||--o{ AspNetRoleClaims : has
+    AspNetUsers ||--o{ AspNetUserClaims : has
+    AspNetUsers ||--o{ AspNetUserLogins : has
+    AspNetUsers ||--o{ AspNetUserRoles : assigned
+    AspNetRoles ||--o{ AspNetUserRoles : includes
+    AspNetUsers ||--o{ AspNetUserTokens : has
+
+    AspNetUsers o|--o| Carts : owns
+    AspNetUsers ||--o{ Orders : places
+    Categories ||--o{ Products : categorizes
+    Carts ||--o{ CartItems : contains
+    Products ||--o{ CartItems : selected
+    Orders ||--|{ OrderItems : snapshots
+    Products o|--o{ OrderItems : referenced

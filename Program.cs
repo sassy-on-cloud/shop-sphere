@@ -6,11 +6,20 @@ using ShopSphere.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddUserSecrets<Program>();
+}
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-var connectionString = builder.Configuration.GetConnectionString("ShopSphere")
-    ?? throw new InvalidOperationException("The 'ShopSphere' connection string is not configured.");
+var connectionString = builder.Configuration.GetConnectionString("ShopSphere");
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException(
+        "The 'ShopSphere' connection string is not configured. Set ConnectionStrings:ShopSphere in user secrets or environment variables before running the app.");
+}
 
 builder.Services.AddDbContext<ShopSphereDbContext>(options =>
     options.UseSqlServer(connectionString));

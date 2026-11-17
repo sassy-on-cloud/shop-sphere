@@ -1,0 +1,54 @@
+flowchart LR
+    subgraph L0["Level 0 — Context"]
+        C0[Customer / Guest]
+        A0[Administrator]
+        P0((ShopSphere web application))
+        D0[(SQL Server database)]
+
+        C0 -->|Registration, search, cart and order requests| P0
+        P0 -->|Pages, catalog and order status| C0
+        A0 -->|Catalog, inventory and order management requests| P0
+        P0 -->|Dashboard and management results| A0
+        P0 <-->|Identity, catalog, cart and order data| D0
+    end
+
+    subgraph L1["Level 1 — Application processes and data stores"]
+        C1[Customer / Guest]
+        A1[Administrator]
+        P1((1. Account and identity))
+        P2((2. Product discovery))
+        P3((3. Cart management))
+        P4((4. Checkout and order processing))
+        P5((5. Administration))
+        D1[(D1 Identity and roles)]
+        D2[(D2 Categories and products)]
+        D3[(D3 Carts and cart items)]
+        D4[(D4 Orders and order items)]
+
+        C1 -->|Register, sign in, profile| P1
+        P1 -->|Account result| C1
+        P1 <-->|Users, roles and claims| D1
+
+        C1 -->|Search, filters, category request| P2
+        P2 -->|Catalog and product details| C1
+        P2 <-->|Products and categories| D2
+
+        C1 -->|Add, update or remove item| P3
+        P3 -->|Cart and current totals| C1
+        P3 <-->|Cart ownership and items| D3
+        P3 -->|Current product/stock lookup| D2
+        P3 -->|Guest cart merge request| P1
+
+        C1 -->|Delivery details and checkout submission| P4
+        P4 -->|Order confirmation and history| C1
+        P4 -->|Recheck prices and stock| D2
+        P4 <-->|Order snapshots and status| D4
+        P4 -->|Clear purchased cart| D3
+        P4 -->|Customer identity| D1
+
+        A1 -->|Dashboard, CRUD, inventory and status updates| P5
+        P5 -->|Dashboard and management views| A1
+        P5 <-->|Users and roles| D1
+        P5 <-->|Products and categories| D2
+        P5 <-->|Orders and order items| D4
+    end

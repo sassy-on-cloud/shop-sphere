@@ -271,20 +271,26 @@ public sealed class ShoppingCartService(ShopSphereDbContext dbContext)
             }
 
             var userItem = userCart.Items.SingleOrDefault(item => item.ProductId == guestItem.ProductId);
+            var currentUserQuantity = userItem?.Quantity ?? 0;
+            var remainingStock = Math.Max(0, stock - currentUserQuantity);
+            if (remainingStock <= 0)
+            {
+                continue;
+            }
+
+            var acceptedQuantity = Math.Min(guestItem.Quantity, remainingStock);
             if (userItem is null)
             {
                 userCart.Items.Add(new CartItem
                 {
                     ProductId = guestItem.ProductId,
-                    Quantity = Math.Min(guestItem.Quantity, stock),
+                    Quantity = acceptedQuantity,
                     AddedAt = guestItem.AddedAt
                 });
             }
             else
             {
-                userItem.Quantity = userItem.Quantity >= stock - Math.Min(guestItem.Quantity, stock)
-                    ? stock
-                    : userItem.Quantity + guestItem.Quantity;
+                userItem.Quantity = currentUserQuantity + acceptedQuantity;
             }
         }
 
